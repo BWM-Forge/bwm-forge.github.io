@@ -483,6 +483,21 @@ section[id] { scroll-margin-top: calc(var(--bwm-header-height) + 20px); }
   padding: 0;
 }
 .bwm-hero__visual picture { display: block; }
+.bwm-hero__video {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity .6s ease;
+  pointer-events: none;
+}
+.bwm-hero__video.is-playing { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .bwm-hero__video { display: none; transition: none; }
+}
 .bwm-hero__visual img {
   display: block;
   width: 100%;
@@ -994,7 +1009,11 @@ section[id] { scroll-margin-top: calc(var(--bwm-header-height) + 20px); }
 <main class="bwm-page-main">
 <section id="top" class="hero-section bwm-hero">
  <div class="bwm-hero__grid" aria-hidden="true"></div><div class="bwm-hero__glow bwm-hero__glow--blue" aria-hidden="true"></div><div class="bwm-hero__glow bwm-hero__glow--orange" aria-hidden="true"></div>
- <figure class="bwm-hero__visual"><picture><source type="image/webp" srcset="./photos/bwm-forge-hero-v5-bg-1920.webp 1920w, ./photos/bwm-forge-hero-v5-bg-3840.webp 3840w" sizes="100vw"><img src="./photos/bwm-forge-hero-v5-bg-1920.jpg" alt="BWM-Forge: Multi-task.Multi-perspective.Multi-scenario.Multi-embodiment. Robot arms, quadrupeds and humanoids across eight simulated scenes." width="3840" height="1280" loading="eager" fetchpriority="high" decoding="async"></picture><img class="bwm-hero__vector" src="./photos/bwm-forge-hero-v5-overlay.svg" alt="" aria-hidden="true" width="1920" height="640" loading="eager" fetchpriority="high" decoding="async"></figure>
+ <figure class="bwm-hero__visual">
+  <picture><source type="image/webp" srcset="./photos/bwm-forge-hero-v5-bg-1920.webp 1920w, ./photos/bwm-forge-hero-v5-bg-3840.webp 3840w" sizes="100vw"><img src="./photos/bwm-forge-hero-v5-bg-1920.jpg" alt="BWM-Forge: Multi-task.Multi-perspective.Multi-scenario.Multi-embodiment. Robot arms, quadrupeds and humanoids across eight simulated scenes." width="3840" height="1280" loading="eager" fetchpriority="high" decoding="async"></picture>
+  <video class="bwm-hero__video" data-src="./media/hero/bwm-forge-v5-loop.mp4" width="1920" height="640" autoplay muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video>
+  <img class="bwm-hero__vector" src="./photos/bwm-forge-hero-v5-overlay.svg" alt="" aria-hidden="true" width="1920" height="640" loading="eager" fetchpriority="high" decoding="async">
+ </figure>
  <div class="bwm-hero__inner"><div class="bwm-hero__copy">
   <div class="bwm-hero__badge"><span class="bwm-hero__badge-dot" aria-hidden="true"></span><span data-i18n="hero.badge">Embodied World Programming</span></div>
   <h1 class="bwm-hero__title"><span class="bwm-hero__title-brand">BWM-Forge:</span><span class="bwm-hero__title-sub"><span data-i18n="hero.title">Agentic World Programming for Embodied Intelligence</span></span></h1>
@@ -1318,6 +1337,41 @@ section[id] { scroll-margin-top: calc(var(--bwm-header-height) + 20px); }
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // Keep the full-bleed hero moving only while it is visible.
+  (function() {
+    const video = document.querySelector('.bwm-hero__video');
+    if (!video) return;
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    let visible = false;
+    function syncPlayback() {
+      if (reducedMotion.matches || document.hidden || !visible) {
+        video.pause();
+        if (reducedMotion.matches) video.classList.remove('is-playing');
+        return;
+      }
+      if (!video.hasAttribute('src')) {
+        video.muted = true;
+        video.src = video.dataset.src;
+        video.load();
+      }
+      video.play().catch(() => {}); // The responsive still remains if autoplay is unavailable.
+    }
+    video.addEventListener('playing', () => {
+      if (reducedMotion.matches || document.hidden || !visible) {
+        syncPlayback();
+        return;
+      }
+      video.classList.add('is-playing');
+    });
+    video.addEventListener('error', () => video.classList.remove('is-playing'));
+    new IntersectionObserver(entries => {
+      visible = entries[0].isIntersecting;
+      syncPlayback();
+    }, { threshold: 0 }).observe(video.parentElement);
+    document.addEventListener('visibilitychange', syncPlayback);
+    reducedMotion.addEventListener('change', syncPlayback);
+  })();
 
   // --- Theme ---
   const themeBtn = document.getElementById('themeToggle');

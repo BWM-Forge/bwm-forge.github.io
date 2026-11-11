@@ -1,0 +1,2409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta name="description" content="BWM-Forge: editable scene programs, collaborative agents, and controllable high-fidelity video generation for robotics."/>
+<link rel="icon" href="./photos/logo.png" type="image/png"/>
+<title>BWM-Forge: Agentic World Programming for Embodied Intelligence</title>
+<script src="./vendor/tailwindcss.js"></script>
+<link href="./vendor/fonts/main.css" rel="stylesheet"/>
+<link href="./vendor/fonts/material-symbols.css" rel="stylesheet"/>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "bg-primary": "var(--c-bg-primary)",
+        "bg-card": "var(--c-bg-card)",
+        "bg-card-alt": "var(--c-bg-card-alt)",
+        "border-dim": "var(--c-border-dim)",
+        "border-accent": "var(--c-border-accent)",
+        "accent-orange": "var(--c-accent-orange)",
+        "accent-cyan": "var(--c-accent-cyan)",
+        "accent-amber": "var(--c-accent-amber)",
+        "accent-blue": "var(--c-accent-blue)",
+        "accent-green": "var(--c-accent-green)",
+        "accent-red": "var(--c-accent-red)",
+        "accent-purple": "var(--c-accent-purple)",
+        "text-primary": "var(--c-text-primary)",
+        "text-secondary": "var(--c-text-secondary)",
+        "text-muted": "var(--c-text-muted)",
+      },
+      fontFamily: {
+        headline: ["Space Grotesk", "sans-serif"],
+        body: ["Inter", "sans-serif"],
+        mono: ["JetBrains Mono", "monospace"],
+        serif: ["Merriweather", "serif"]
+      },
+      boxShadow: {
+        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+        'glow-orange': '0 0 28px rgba(249, 115, 22, 0.25)',
+      }
+    },
+  },
+}
+</script>
+<script>
+  (() => {
+    const savedTheme = localStorage.getItem('bwm-forge-theme-preference');
+    const initialTheme = savedTheme || 'light';
+    document.documentElement.classList.toggle('dark', initialTheme === 'dark');
+  })();
+</script>
+<style>
+  :root {
+    --c-bg-primary: #ffffff;
+    --c-bg-card: #ffffff;
+    --c-bg-card-alt: #f1f5f9;
+    --c-border-dim: #c4cdda;
+    --c-border-accent: #a3b1c3;
+    --c-border-frame: #9aaabd;
+    --c-frame-shadow: rgba(15, 23, 42, 0.05);
+    --border-width-frame: 1px;
+    --border-width-card: 1px;
+    --c-accent-orange: #f97316;
+    --c-accent-cyan: #0ea5e9;
+    --c-accent-amber: #f59e0b;
+    --c-accent-blue: #3b82f6;
+    --c-accent-green: #10b981;
+    --c-accent-red: #ef4444;
+    --c-accent-purple: #8b5cf6;
+    --c-text-primary: #0f172a;
+    --c-text-secondary: #475569;
+    --c-text-muted: #94a3b8;
+    --c-card-bg: #ffffff;
+    --c-hero-bg: #ffffff;
+    --c-tint-amber: rgba(245, 158, 11, 0.08);
+    --c-tint-blue: rgba(59, 130, 246, 0.08);
+    --c-tint-emerald: rgba(16, 185, 129, 0.08);
+    --c-tint-red: rgba(239, 68, 68, 0.08);
+    --c-tint-purple: rgba(139, 92, 246, 0.08);
+    --c-tint-orange: rgba(249, 115, 22, 0.08);
+    --c-tint-cyan: rgba(14, 165, 233, 0.08);
+    --c-tint-subtle: rgba(0,0,0,0.02);
+    --c-selection: rgba(59, 130, 246, 0.2);
+    --c-header-bg: rgba(255, 255, 255, 0.8);
+    --c-divider: #b4c0d0;
+    --c-badge-bg: #eff6ff;
+    --c-badge-border: #b6c8e3;
+    --c-tag-text: #475569;
+    --c-card-hover-shadow: rgba(0,0,0,0.08);
+    --c-body-text: #334155;
+  }
+  html.dark {
+    --c-bg-primary: #0c1220;
+    --c-bg-card: #141e32;
+    --c-bg-card-alt: #1a2844;
+    --c-border-dim: #30415c;
+    --c-border-accent: #485f7d;
+    --c-border-frame: #506987;
+    --c-frame-shadow: rgba(0, 0, 0, 0.15);
+    --c-accent-orange: #ff6b3a;
+    --c-accent-cyan: #00e8ff;
+    --c-accent-amber: #ffb833;
+    --c-accent-blue: #5ba3ff;
+    --c-accent-green: #2ee8a8;
+    --c-accent-red: #ff6b6b;
+    --c-accent-purple: #c88dff;
+    --c-text-primary: #f0f4fa;
+    --c-text-secondary: #a8bcd4;
+    --c-text-muted: #7690b0;
+    --c-card-bg: #141e32;
+    --c-hero-bg: #0c1220;
+    --c-tint-amber: rgba(255, 184, 51, 0.08);
+    --c-tint-blue: rgba(91, 163, 255, 0.08);
+    --c-tint-emerald: rgba(46, 232, 168, 0.08);
+    --c-tint-red: rgba(255, 107, 107, 0.08);
+    --c-tint-purple: rgba(200, 141, 255, 0.08);
+    --c-tint-orange: rgba(255, 107, 58, 0.08);
+    --c-tint-cyan: rgba(0, 232, 255, 0.08);
+    --c-tint-subtle: rgba(255,255,255,0.02);
+    --c-selection: rgba(255, 107, 58, 0.2);
+    --c-header-bg: rgba(12, 18, 32, 0.92);
+    --c-divider: #3a5070;
+    --c-badge-bg: #1a2844;
+    --c-badge-border: #253552;
+    --c-tag-text: #a8bcd4;
+    --c-card-hover-shadow: rgba(0,0,0,0.35);
+    --c-body-text: #a8bcd4;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--c-bg-primary); color: var(--c-text-primary); font-family: 'Inter', sans-serif; transition: background 0.3s, color 0.3s; }
+  ::selection { background: var(--c-selection); }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .section-divider { height: 1px; background: linear-gradient(to right, transparent, var(--c-divider), transparent); }
+  section[id] { scroll-margin-top: 5rem; }
+
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.12s; }
+  .reveal-delay-2 { transition-delay: 0.24s; }
+  .reveal-delay-3 { transition-delay: 0.36s; }
+  .reveal-delay-4 { transition-delay: 0.48s; }
+  .reveal-delay-5 { transition-delay: 0.60s; }
+  .reveal-delay-6 { transition-delay: 0.72s; }
+  .reveal-delay-7 { transition-delay: 0.84s; }
+/* Reusable media and pipeline components. Every workspace can use their tags. */
+site-image-window, site-video-window, site-pipeline, site-step { display: block; }
+
+.site-media {
+  margin: 0;
+  overflow: hidden;
+  border: var(--border-width-card) solid var(--c-border-accent);
+  border-radius: 14px;
+  background: var(--c-bg-card);
+  color: var(--c-text-primary);
+}
+.site-media__header, .site-media__footer { padding: 12px 16px; }
+.site-media__header { border-bottom: 1px solid var(--c-border-dim); font-weight: 600; }
+.site-media__footer { border-top: 1px solid var(--c-border-dim); color: var(--c-text-secondary); font-size: 0.875rem; }
+.site-media__frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 210px;
+  aspect-ratio: 16 / 9;
+  background: var(--c-bg-card-alt);
+}
+.site-media__frame img, .site-media__frame video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+}
+.site-media__pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--c-border-dim); }
+.site-media__pair-item { min-width: 0; background: var(--c-bg-card); }
+.site-media__pair-label { padding: 8px 12px; color: var(--c-text-secondary); font-size: 0.75rem; }
+.site-media__empty { padding: 24px; text-align: center; color: var(--c-text-muted); }
+.site-media__open { color: var(--c-accent-blue); font-size: 0.8125rem; text-decoration: underline; }
+
+.site-pipeline {
+  display: grid;
+  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.site-pipeline__steps { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.site-pipeline__step { position: relative; padding: 0 0 14px 18px; border-left: 2px solid var(--c-border-dim); }
+.site-pipeline__step::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--c-border-accent);
+}
+.site-pipeline__step.is-active::before { background: var(--c-accent-blue); box-shadow: 0 0 0 4px var(--c-tint-blue); }
+.site-pipeline__step:last-child { border-left-color: transparent; }
+.site-pipeline__button {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--c-text-secondary);
+  text-align: left;
+  cursor: pointer;
+}
+.site-pipeline__button:hover, .site-pipeline__button:focus-visible { background: var(--c-bg-card-alt); color: var(--c-text-primary); }
+.site-pipeline__step.is-active .site-pipeline__button { background: var(--c-bg-card); border-color: var(--c-border-dim); color: var(--c-text-primary); }
+.site-pipeline__badge { display: block; margin-top: 4px; color: var(--c-accent-orange); font-size: 0.75rem; }
+.site-pipeline__panel {
+  min-width: 0;
+  padding: 20px;
+  border: var(--border-width-frame) solid var(--c-border-frame);
+  border-radius: 14px;
+  background: var(--c-bg-card);
+}
+.site-pipeline__panel[hidden] { display: none; }
+.site-pipeline__title { margin: 0 0 8px; font-size: 1.25rem; font-weight: 700; }
+.site-pipeline__description { margin: 0 0 16px; color: var(--c-text-secondary); }
+.site-pipeline__content { display: grid; gap: 16px; }
+.site-pipeline__empty { color: var(--c-text-muted); }
+
+@media (max-width: 767px) {
+  .site-pipeline { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .site-media__pair { grid-template-columns: minmax(0, 1fr); }
+  .site-media__frame { min-height: 170px; }
+}
+
+
+/* Existing Hero and Setup visual units; shared by all workspaces. */
+  .term-line { opacity: 0; transform: translateX(-8px); transition: none; }
+  .term-line.typed { opacity: 1; transform: translateX(0); transition: opacity 0.4s ease, transform 0.4s ease; }
+  .term-cursor { display: inline-block; width: 7px; height: 14px; background: var(--c-accent-cyan); margin-left: 2px; vertical-align: middle; animation: cursorBlink 0.8s step-end infinite; }
+  @keyframes cursorBlink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+  .toggle-btn { padding: 6px; border-radius: 6px; border: 1px solid var(--c-border-dim); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s, border-color 0.2s; color: var(--c-text-muted); }
+  .toggle-btn:hover { background: var(--c-bg-card-alt); border-color: var(--c-border-accent); color: var(--c-text-primary); }
+  .hero-section { background: var(--c-hero-bg); }
+
+
+/* Existing architecture visual units; shared by all workspaces. */
+  .pyramid-layer {
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    position: relative; overflow: hidden;
+    background: var(--c-card-bg);
+    box-shadow: 0 2px 10px var(--c-tint-subtle);
+  }
+  .pyramid-layer::before {
+    content: ''; position: absolute; top: 0; left: -100%; width: 200%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+    transition: left 0.5s;
+  }
+  .pyramid-layer:hover::before { left: 100%; }
+  .pyramid-layer:hover { transform: translateY(-3px) scale(1.01); z-index: 8; box-shadow: 0 10px 25px var(--c-card-hover-shadow); }
+
+  .flow-dot { width: 4px; height: 4px; border-radius: 50%; animation: flowDown 1.4s ease-in-out infinite; }
+  @keyframes flowDown { 0% { opacity:0; transform:translateY(-6px); } 50% { opacity:1; } 100% { opacity:0; transform:translateY(6px); } }
+
+  .agent-dot { width: 20px; height: 20px; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono'; font-weight: 600; background: var(--c-card-bg); }
+  .agent-dot.working { animation: agentPulse 2s ease-in-out infinite; }
+  @keyframes agentPulse { 0%,100% { box-shadow: 0 0 0 0 currentColor; } 50% { box-shadow: 0 0 6px 1px currentColor; } }
+
+  .loop-particle { animation: loopMove 3s linear infinite; }
+  @keyframes loopMove { 0% { offset-distance: 0%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { offset-distance: 100%; opacity: 0; } }
+
+  .side-card { background: var(--c-card-bg); transition: all 0.3s; }
+  .side-card:hover { box-shadow: 0 8px 24px var(--c-card-hover-shadow); }
+
+
+/* Existing Consensus and Features visual units; shared by all workspaces. */
+  .feature-card { transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; background: var(--c-card-bg); }
+  .feature-card:hover { transform: translateY(-5px); box-shadow: 0 14px 30px var(--c-card-hover-shadow); }
+  .feature-card .feat-icon { transition: transform 0.3s, color 0.3s; }
+  .feature-card:hover .feat-icon { transform: scale(1.25) rotate(-5deg); }
+
+  .scroll-track { overflow: hidden; position: relative; }
+  .scroll-inner { display: flex; gap: 20px; animation: scrollLeft 35s linear infinite; width: max-content; padding: 10px 0; }
+  .scroll-inner:hover { animation-play-state: paused; }
+  @keyframes scrollLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+  .disc-card { min-width: 360px; max-width: 400px; flex-shrink: 0; background: var(--c-card-bg); box-shadow: 0 4px 15px var(--c-tint-subtle); }
+
+  .consensus-section { background: var(--c-hero-bg); }
+  .consensus-fade-r { background: linear-gradient(to left, var(--c-hero-bg), transparent); }
+  .consensus-fade-l { background: linear-gradient(to right, var(--c-hero-bg), transparent); }
+  .footer-section { background: var(--c-hero-bg); }
+
+/* Callable visual units: same palette, typography and hover language as the source page. */
+site-text-window, site-card, site-metric, site-section-heading, site-terminal { display: block; }
+.site-media, .site-pipeline__panel, .site-card, .site-metric { border-radius: 12px; }
+.site-media__text { padding: 20px; color: var(--c-text-secondary); font-size: 0.875rem; line-height: 1.7; }
+.site-media__text > :first-child { margin-top: 0; }
+.site-media__text > :last-child { margin-bottom: 0; }
+.site-card {
+  height: 100%; padding: 24px; border: var(--border-width-card) solid var(--c-border-accent);
+  background: var(--c-card-bg); color: var(--c-text-primary);
+  transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+}
+.site-card:hover { transform: translateY(-5px); box-shadow: 0 14px 30px var(--c-card-hover-shadow); border-color: var(--c-border-accent); }
+.site-card__eyebrow, .site-heading__eyebrow { margin: 0 0 12px; color: var(--c-accent-blue); font: 600 0.625rem 'JetBrains Mono', monospace; letter-spacing: 0.2em; text-transform: uppercase; }
+.site-card__header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.site-card__icon { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 6px; color: var(--c-accent-blue); background: var(--c-tint-blue); }
+.site-card__title { margin: 0; font: 700 0.875rem 'Space Grotesk', sans-serif; }
+.site-card__body { color: var(--c-text-secondary); font-size: 0.75rem; line-height: 1.6; }
+.site-card__body > :first-child { margin-top: 0; }
+.site-card__body > :last-child { margin-bottom: 0; }
+.site-metric { padding: 16px; border: 1px solid var(--c-border-dim); background: var(--c-card-bg); text-align: center; }
+.site-metric__value { display: block; color: var(--c-text-primary); font: 700 1.5rem 'Space Grotesk', sans-serif; }
+.site-metric__label { display: block; margin-top: 4px; color: var(--c-text-secondary); font: 500 0.6875rem 'JetBrains Mono', monospace; }
+.site-heading__title { margin: 0; color: var(--c-text-primary); font: 700 clamp(1.875rem, 4vw, 2.25rem)/1.2 'Space Grotesk', sans-serif; }
+.site-heading__description { margin: 16px 0 0; color: var(--c-text-secondary); font-size: 0.875rem; line-height: 1.7; }
+.site-terminal { overflow: hidden; border: 1px solid #334155; border-radius: 12px; background: #0f172a; color: #cbd5e1; box-shadow: 0 20px 40px var(--c-card-hover-shadow); font: 0.75rem 'JetBrains Mono', monospace; }
+.site-terminal__bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: #1e293b; border-bottom: 1px solid #334155; }
+.site-terminal__dot { width: 10px; height: 10px; border-radius: 50%; }
+.site-terminal__dot--red { background: #f87171; }
+.site-terminal__dot--amber { background: #fbbf24; }
+.site-terminal__dot--green { background: #4ade80; }
+.site-terminal__name { margin-left: auto; color: #94a3b8; font-size: 0.625rem; }
+.site-terminal__screen { padding: 20px; }
+.site-terminal__screen > :first-child { margin-top: 0; }
+.site-terminal__screen > :last-child { margin-bottom: 0; }
+site-switcher, site-feedback-gate, site-score, site-option { display: block; }
+.site-switcher__bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.site-switcher__button { padding: 8px 12px; border: 1px solid var(--c-border-dim); border-radius: 8px; background: var(--c-bg-card); color: var(--c-text-secondary); font: 500 0.75rem 'JetBrains Mono', monospace; cursor: pointer; }
+.site-switcher__button:hover, .site-switcher__button:focus-visible { color: var(--c-accent-blue); border-color: var(--c-border-accent); }
+.site-switcher__button.is-active { color: var(--c-accent-blue); border-color: var(--c-accent-blue); background: var(--c-tint-blue); }
+.site-switcher__panel[hidden] { display: none; }
+.site-feedback, .site-score { padding: 16px; border: 1px solid var(--c-border-dim); border-radius: 12px; background: var(--c-card-bg); }
+.site-feedback { border-left: 3px solid var(--c-border-accent); }
+.site-feedback--accepted { border-left-color: var(--c-accent-green); }
+.site-feedback--revise { border-left-color: var(--c-accent-amber); }
+.site-feedback--paused { border-left-color: var(--c-accent-red); }
+.site-feedback__state { color: var(--c-text-primary); font: 700 0.875rem 'Space Grotesk', sans-serif; }
+.site-feedback__text { margin: 8px 0 0; color: var(--c-text-secondary); font-size: 0.75rem; line-height: 1.6; }
+.site-score__label { display: block; color: var(--c-text-secondary); font-size: 0.75rem; }
+.site-score__value, .site-score__unassessed { display: block; margin: 8px 0; color: var(--c-text-primary); font: 700 1.125rem 'Space Grotesk', sans-serif; }
+.site-score__unassessed { color: var(--c-text-muted); }
+.site-score__track { overflow: hidden; height: 5px; border-radius: 99px; background: var(--c-bg-card-alt); }
+.site-score__fill { display: block; height: 100%; border-radius: inherit; background: var(--c-accent-blue); }
+.site-section-link { display: inline-flex; align-items: center; padding: 8px 12px; border: 1px solid var(--c-border-dim); border-radius: 8px; background: var(--c-bg-card); color: var(--c-text-secondary); font: 500 0.75rem 'JetBrains Mono', monospace; text-decoration: none; transition: color 0.2s, border-color 0.2s, background 0.2s; }
+.site-section-link:hover, .site-section-link:focus-visible { color: var(--c-accent-blue); border-color: var(--c-accent-blue); background: var(--c-tint-blue); }
+/* Reusable, keyboard-accessible process drawers for evidence-heavy sections. */
+.site-drawer { border: 1px solid var(--c-border-dim); border-radius: 18px; background: var(--c-bg-card); overflow: hidden; transition: border-color .25s, box-shadow .25s; }
+.site-drawer:hover, .site-drawer[open] { border-color: var(--c-accent-blue); box-shadow: 0 8px 28px var(--c-tint-blue); }
+.site-drawer > summary { display: flex; align-items: center; gap: 12px; padding: 20px 24px; cursor: pointer; list-style: none; font-weight: 600; color: var(--c-text-primary); }
+.site-drawer > summary::-webkit-details-marker { display: none; }
+.site-drawer > summary:focus-visible { outline: 2px solid var(--c-accent-blue); outline-offset: -4px; border-radius: 16px; }
+.site-drawer__icon { color: var(--c-accent-blue); }
+.site-drawer__chevron { margin-left: auto; transition: transform .25s; }
+.site-drawer[open] > summary .site-drawer__chevron { transform: rotate(180deg); }
+.site-drawer__body { padding: 4px 24px 24px; }
+.site-drawer[open] > .site-drawer__body { animation: site-drawer-enter .3s ease-out; }
+@keyframes site-drawer-enter { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+@supports (interpolate-size: allow-keywords) {
+ .site-drawer { interpolate-size: allow-keywords; }
+ .site-drawer::details-content { block-size: 0; overflow: hidden; transition: block-size .3s, content-visibility .3s allow-discrete; }
+ .site-drawer[open]::details-content { block-size: auto; }
+}
+@media (max-width: 640px) { .site-drawer > summary { padding: 18px 16px; } .site-drawer__body { padding: 4px 16px 20px; } }
+@media (prefers-reduced-motion: reduce) { .site-drawer, .site-drawer__chevron, .site-drawer::details-content { transition: none; } .site-drawer[open] > .site-drawer__body { animation: none; } }
+:root { --bwm-header-height: 76px; }
+section[id] { scroll-margin-top: calc(var(--bwm-header-height) + 20px); }
+
+.bwm-header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  background: var(--c-header-bg);
+  border-bottom: 1px solid var(--c-border-dim);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+.bwm-header__inner {
+  width: min(100%, 1560px);
+  height: var(--bwm-header-height);
+  margin: auto;
+  padding: 0 28px;
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) auto minmax(160px, 1fr);
+  align-items: center;
+  gap: 16px;
+}
+.bwm-brand {
+  display: inline-flex;
+  width: max-content;
+  align-items: center;
+  gap: 9px;
+  color: var(--c-text-primary);
+  font: 700 17px 'Space Grotesk', sans-serif;
+  letter-spacing: -.025em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.bwm-brand img {
+  width: 39px;
+  height: 39px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 9px var(--c-tint-blue));
+}
+.bwm-main-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(760px, 100%);
+  gap: 7px;
+  min-width: 0;
+}
+.bwm-nav-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 42px;
+  padding: 9px 11px;
+  flex: 1 1 auto;
+  border: 1px solid var(--c-border-dim);
+  border-radius: 10px;
+  color: var(--c-text-secondary);
+  background: var(--c-bg-card);
+  font: 600 13px 'JetBrains Mono', monospace;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color .2s, background .2s, border-color .2s, box-shadow .2s, transform .2s;
+}
+.bwm-nav-button .material-symbols-outlined { font-size: 18px; }
+.bwm-nav-button:hover,
+.bwm-nav-button:focus-visible,
+.bwm-nav-button[aria-current="location"] {
+  color: var(--c-accent-blue);
+  background: var(--c-tint-blue);
+  border-color: var(--c-border-accent);
+}
+.bwm-nav-button:hover { transform: translateY(-1px); }
+.bwm-nav-button[aria-current="location"] { box-shadow: inset 0 -2px 0 var(--c-accent-blue); }
+.bwm-nav-button:focus-visible,
+.bwm-brand:focus-visible,
+.bwm-setup-link:focus-visible,
+.bwm-hero a:focus-visible {
+  outline: 2px solid var(--c-accent-cyan);
+  outline-offset: 3px;
+}
+.bwm-header__actions {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 7px;
+}
+.bwm-setup-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 36px;
+  padding: 0 11px;
+  border: 1px solid var(--c-border-dim);
+  border-radius: 9px;
+  color: var(--c-text-primary);
+  background: var(--c-bg-card-alt);
+  font: 600 11px 'JetBrains Mono', monospace;
+  text-decoration: none;
+  transition: border-color .2s, color .2s;
+}
+.bwm-setup-link:hover { color: var(--c-accent-blue); border-color: var(--c-accent-blue); }
+.bwm-setup-link .material-symbols-outlined { font-size: 17px; }
+.bwm-page-main { padding-top: var(--bwm-header-height); }
+
+.bwm-hero {
+  position: relative;
+  min-height: min(710px, calc(100svh - var(--bwm-header-height)));
+  overflow: hidden;
+  isolation: isolate;
+}
+.bwm-hero__grid {
+  position: absolute;
+  inset: 0;
+  opacity: .3;
+  background-image: linear-gradient(var(--c-border-dim) 1px, transparent 1px), linear-gradient(90deg, var(--c-border-dim) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: linear-gradient(90deg, transparent 0%, black 55%, transparent 100%);
+  pointer-events: none;
+}
+.bwm-hero__glow {
+  position: absolute;
+  width: 550px;
+  height: 550px;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+}
+.bwm-hero__glow--blue { top: -300px; right: -130px; background: var(--c-tint-cyan); }
+.bwm-hero__glow--orange { bottom: -440px; left: -120px; background: var(--c-tint-orange); }
+.bwm-hero__inner {
+  position: relative;
+  width: min(100%, 1320px);
+  min-height: inherit;
+  margin: auto;
+  padding: 66px 48px 72px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
+  align-items: center;
+  gap: 34px;
+}
+.bwm-hero__copy { position: relative; z-index: 1; min-width: 0; }
+.bwm-hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 26px;
+  padding: 7px 12px;
+  border: 1px solid var(--c-badge-border);
+  border-radius: 999px;
+  color: var(--c-accent-blue);
+  background: var(--c-badge-bg);
+  font: 600 10px 'JetBrains Mono', monospace;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.bwm-hero__badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--c-accent-cyan);
+  box-shadow: 0 0 12px var(--c-accent-cyan);
+}
+.bwm-hero__title {
+  margin: 0;
+  max-width: 740px;
+  color: var(--c-text-primary);
+  font: 700 clamp(36px, 4vw, 64px)/1.08 'Space Grotesk', sans-serif;
+  letter-spacing: -.045em;
+}
+.bwm-hero__title-brand { display: block; margin-bottom: 11px; }
+.bwm-hero__title-sub {
+  display: block;
+  background: linear-gradient(110deg, var(--c-accent-blue), var(--c-accent-purple));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.bwm-hero__description {
+  max-width: 530px;
+  margin: 24px 0 32px;
+  color: var(--c-text-secondary);
+  font: 400 16px/1.75 'Inter', sans-serif;
+}
+.bwm-hero__actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.bwm-hero__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 48px;
+  padding: 0 19px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font: 600 12px 'JetBrains Mono', monospace;
+  text-decoration: none;
+  transition: transform .2s, box-shadow .2s, border-color .2s, background .2s;
+}
+.bwm-hero__cta:hover { transform: translateY(-2px); }
+.bwm-hero__cta .material-symbols-outlined { font-size: 18px; }
+.bwm-hero__cta-arrow { margin-left: 4px; }
+.bwm-hero__cta--primary {
+  color: #fff;
+  background: linear-gradient(120deg, #0784c6, #5768dd);
+  box-shadow: 0 10px 26px var(--c-tint-blue);
+}
+.bwm-hero__cta--primary:hover { box-shadow: 0 12px 28px var(--c-tint-purple); }
+.bwm-hero__cta--secondary {
+  color: var(--c-text-primary);
+  background: var(--c-bg-card);
+  border-color: var(--c-border-accent);
+}
+.bwm-hero__cta--secondary:hover { border-color: var(--c-accent-blue); background: var(--c-tint-blue); }
+.bwm-hero__resources {
+  max-width: 650px;
+  margin-top: 27px;
+  padding-top: 18px;
+  border-top: 1px solid var(--c-border-dim);
+}
+.bwm-hero__resources-label {
+  display: block;
+  margin-bottom: 11px;
+  color: var(--c-text-muted);
+  font: 700 10px 'JetBrains Mono', monospace;
+  letter-spacing: .14em;
+}
+.bwm-hero__resources-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+.bwm-hero__resource {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  min-height: 47px;
+  padding: 9px 10px;
+  border: 1px solid var(--c-border-dim);
+  border-radius: 10px;
+  color: var(--c-text-primary);
+  background: var(--c-bg-card);
+  font: 600 11px/1.35 'JetBrains Mono', monospace;
+  text-decoration: none;
+  box-shadow: 0 3px 10px var(--c-tint-subtle);
+  transition: border-color .2s, background .2s, transform .2s, box-shadow .2s;
+}
+.bwm-hero__resource:hover {
+  border-color: var(--c-accent-blue);
+  background: var(--c-tint-blue);
+  box-shadow: 0 7px 18px var(--c-tint-blue);
+  transform: translateY(-2px);
+}
+.bwm-hero__resource-icon { flex: 0 0 auto; color: var(--c-accent-blue); font-size: 17px; }
+.bwm-hero__resource-arrow { flex: 0 0 auto; margin-left: auto; color: var(--c-text-muted); font-size: 15px; }
+.bwm-hero__flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px;
+  margin-top: 31px;
+  color: var(--c-text-muted);
+  font: 500 10px 'JetBrains Mono', monospace;
+  letter-spacing: .02em;
+}
+.bwm-hero__flow .material-symbols-outlined { color: var(--c-accent-blue); font-size: 15px; }
+.bwm-hero__art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  aspect-ratio: 1;
+}
+.bwm-hero__art-ring {
+  position: absolute;
+  inset: 7%;
+  border: 1px solid var(--c-border-dim);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--c-tint-blue), transparent 70%);
+  box-shadow: 0 0 70px var(--c-tint-blue);
+}
+.bwm-hero__art img {
+  position: relative;
+  display: block;
+  width: min(100%, 590px);
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 28px 34px rgba(4, 12, 30, .2));
+}
+
+@media (max-width: 1300px) {
+  :root { --bwm-header-height: 116px; }
+  .bwm-header__inner {
+    padding: 9px 22px 8px;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: 41px 50px;
+    gap: 2px 12px;
+  }
+  .bwm-main-nav { grid-column: 1 / -1; grid-row: 2; width: 100%; justify-content: safe center; overflow-x: auto; scrollbar-width: none; }
+  .bwm-nav-button { flex: 0 0 auto; }
+  .bwm-main-nav::-webkit-scrollbar { display: none; }
+  .bwm-header__actions { grid-column: 2; grid-row: 1; }
+  .bwm-hero__inner { padding-top: 54px; padding-bottom: 58px; }
+  .bwm-hero__title { font-size: clamp(34px, 4.3vw, 56px); }
+}
+@media (max-width: 800px) {
+  .bwm-hero__inner { grid-template-columns: minmax(0, 1fr); gap: 10px; text-align: center; padding: 55px 24px 42px; }
+  .bwm-hero__description { margin-left: auto; margin-right: auto; }
+  .bwm-hero__actions, .bwm-hero__flow { justify-content: center; }
+  .bwm-hero__resources { margin-inline: auto; }
+  .bwm-hero__art { width: min(100%, 480px); margin: 0 auto; }
+  .bwm-hero__flow { margin-top: 31px; }
+}
+@media (max-width: 680px) {
+  .bwm-header__inner { padding-left: 14px; padding-right: 14px; }
+  .bwm-main-nav { margin: 0 -14px; padding: 0 14px; }
+  .bwm-nav-button { padding: 8px 11px; border-color: var(--c-border-dim); background: var(--c-bg-card); }
+  .bwm-setup-link { display: none; }
+  .bwm-brand { font-size: 15px; }
+  .bwm-brand img { width: 35px; height: 35px; }
+  .bwm-hero__title { font-size: clamp(35px, 8vw, 48px); }
+  .bwm-hero__description { font-size: 14px; }
+  .bwm-hero__resources-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bwm-hero__resource:last-child { grid-column: 1 / -1; }
+  .bwm-hero__art { width: min(100%, 390px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bwm-nav-button, .bwm-hero__cta, .bwm-hero__resource { transition: none; }
+}
+
+/* Four resource actions, with enough room for labels and icons. */
+.bwm-hero__actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; max-width:460px; }
+.bwm-hero__cta { padding:12px 10px; min-width:0; font-size:12px; line-height:1.5; }
+.bwm-hero__cta > span:last-child { text-align:center; }
+.bwm-hero__icon { width:18px; height:18px; flex:none; }
+@media(max-width:800px) { .bwm-hero__actions { margin-inline:auto; } }
+@media(max-width:380px) { .bwm-hero__cta { padding:11px 6px; font-size:10px; gap:6px; } }
+/* Shared process language for the Agent and Harness diagrams. */
+.bwm-section { width:min(100%,1200px); margin-inline:auto; padding:88px 24px; }
+.bwm-section-intro { max-width:780px; margin:0 auto 36px; text-align:center; }
+.bwm-eyebrow { margin:0 0 14px; color:var(--c-accent-blue); font:700 10px 'JetBrains Mono',monospace; letter-spacing:.17em; }
+.bwm-section-intro h2 { margin:0; font:700 clamp(29px,4vw,42px)/1.2 'Space Grotesk',sans-serif; letter-spacing:-.03em; text-wrap:balance; }
+.bwm-section-intro > p:last-child { color:var(--c-text-secondary); font-size:14px; line-height:1.8; margin-top:18px; }
+.bwm-input-modes { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-bottom:32px; }
+.bwm-input-mode { padding:22px; border:var(--border-width-card) solid var(--c-border-accent); border-radius:12px; background:var(--c-bg-card); }
+.bwm-input-mode__label { color:var(--c-accent-cyan); font:600 9px 'JetBrains Mono',monospace; letter-spacing:.08em; }
+.bwm-input-mode h3 { display:flex; gap:8px; align-items:center; margin:14px 0 10px; font:700 14px 'Space Grotesk',sans-serif; }
+.bwm-input-mode h3 .material-symbols-outlined { font-size:19px; color:var(--c-accent-blue); }
+.bwm-input-mode p { color:var(--c-text-secondary); font-size:12px; line-height:1.8; margin:0; }
+/* Input evidence is interpreted before selecting a generation mode. */
+.bwm-evidence { margin:0 0 20px; padding:20px 22px 24px; border:1px solid var(--c-border-dim); border-radius:12px; background:var(--c-bg-card); }
+.bwm-evidence figcaption { margin:0 0 22px; text-align:center; color:var(--c-text-secondary); font:600 10px 'JetBrains Mono',monospace; letter-spacing:.1em; }
+.bwm-evidence__grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
+.bwm-evidence__mapping { display:grid; grid-template-columns:minmax(0,1fr) 36px minmax(0,1fr); gap:6px; align-items:start; padding:0 16px; }
+.bwm-evidence__mapping + .bwm-evidence__mapping { border-left:1px solid var(--c-border-dim); }
+.bwm-evidence__endpoint { min-width:0; display:flex; align-items:center; flex-direction:column; gap:10px; color:var(--c-text-secondary); text-align:center; font:500 12px/1.5 'Inter',sans-serif; }
+.bwm-evidence__endpoint--result { color:var(--c-text-primary); font-weight:600; }
+.bwm-evidence__icon { display:block; width:64px; height:56px; color:var(--c-text-primary); }
+.bwm-evidence__endpoint--result .bwm-evidence__icon { color:var(--c-accent-blue); }
+.bwm-evidence__connector { align-self:start; padding-top:19px; color:var(--c-accent-blue); }
+.bwm-evidence__connector svg { display:block; width:36px; height:18px; }
+.bwm-input-mode { display:flex; flex-direction:column; }
+.bwm-input-mode h3 { font-size:16px; line-height:1.45; align-items:flex-start; }
+.bwm-input-mode h3 .material-symbols-outlined { flex:none; margin-top:2px; }
+.bwm-input-mode__input { display:block; margin-top:auto; padding-top:18px; text-align:right; color:var(--c-text-secondary); font:400 11px/1.5 'Inter',sans-serif; }
+@media(max-width:900px) {
+ .bwm-evidence { padding:20px; }
+ .bwm-evidence__grid { grid-template-columns:minmax(0,1fr); gap:18px; max-width:480px; margin-inline:auto; }
+ .bwm-evidence__mapping { grid-template-columns:minmax(0,1fr) 36px minmax(0,1fr); padding:0; }
+ .bwm-evidence__mapping + .bwm-evidence__mapping { border-left:0; border-top:1px solid var(--c-border-dim); padding-top:18px; }
+ .bwm-input-modes { grid-template-columns:minmax(0,1fr); }
+}
+
+.bwm-agent-explorer { display:grid; grid-template-columns:minmax(300px,.45fr) minmax(0,1fr); grid-template-rows:auto minmax(0,1fr); gap:20px 24px; align-items:stretch; }
+.bwm-collaboration { display:grid; grid-column:1; grid-row:1 / span 2; grid-template-rows:subgrid; gap:20px; min-width:0; padding:22px; border:var(--border-width-frame) solid var(--c-border-frame); border-radius:16px; background:radial-gradient(ellipse at top,var(--c-tint-blue),transparent 70%),var(--c-bg-card); box-shadow:0 4px 16px var(--c-frame-shadow); overflow:hidden; }
+.bwm-diagram-heading { display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; padding:18px 22px; border-bottom:1px solid var(--c-border-dim); color:var(--c-accent-cyan); font:600 10px/1.5 'JetBrains Mono',monospace; letter-spacing:.08em; }
+.bwm-diagram-heading > span:last-child { color:var(--c-text-muted); font-size:9px; }
+.bwm-flow-scroll { min-width:0; max-width:100%; overflow-x:auto; padding:20px; scrollbar-width:thin; scrollbar-color:var(--c-border-accent) transparent; }
+.bwm-flow-scroll:focus-visible { outline:2px solid var(--c-accent-cyan); outline-offset:-3px; }
+.bwm-flow-grid { --flow-accent:var(--c-accent-blue); position:relative; display:grid; grid-template-columns:repeat(var(--flow-columns,3),minmax(0,1fr)); gap:38px 32px; padding:10px 18px 16px; min-width:600px; isolation:isolate; }
+.bwm-flow-grid > [data-flow-node] { grid-column:var(--flow-col); grid-row:var(--flow-row); position:relative; z-index:1; }
+.bwm-collaboration [role="tablist"] { display:flex; flex-direction:column; flex:1; min-height:0; }
+.bwm-collaboration .bwm-flow-scroll { display:flex; flex-direction:column; flex:1; padding:18px 12px; }
+.bwm-agent-map { min-width:0; grid-template-rows:repeat(5,min-content); align-content:space-between; flex:1; gap:32px 0; padding:10px 22px 18px; }
+.bwm-agent-card { --agent-color:var(--c-accent-blue); display:flex; flex-direction:column; gap:6px; width:100%; min-height:96px; padding:12px 14px; background:var(--c-bg-card); color:var(--c-text-primary); border:2px solid var(--c-border-accent); border-top:3px solid var(--agent-color); border-radius:11px; text-align:left; cursor:pointer; transition:border-color .2s,box-shadow .2s,transform .2s; }
+.bwm-agent-card:focus-visible { outline:2px solid var(--agent-color); outline-offset:4px; }
+.bwm-agent-card__top { display:flex; align-items:center; justify-content:space-between; color:var(--agent-color); font:700 10px 'JetBrains Mono',monospace; }
+.bwm-agent-card__top > .material-symbols-outlined { font-size:20px; }
+.bwm-agent-card > strong { font:700 14px 'Space Grotesk',sans-serif; }
+.bwm-agent-map .bwm-agent-result { min-height:96px; padding:12px; gap:6px; text-align:center; align-items:center; border-left-color:var(--c-accent-green); }
+.bwm-agent-result > .material-symbols-outlined { color:var(--c-accent-green); font-size:24px; }
+.bwm-agent-result > span:last-child { color:var(--c-text-muted); font-size:10px; }
+.bwm-agent-details { display:grid; grid-template-columns:minmax(0,1fr); grid-column:2; grid-row:1 / span 2; grid-template-rows:subgrid; align-self:stretch; min-width:0; }
+.bwm-agent-panel { display:grid; grid-column:1; grid-row:1 / span 2; grid-template-columns:minmax(0,1fr); grid-template-rows:subgrid; align-self:stretch; gap:20px; padding:22px; border:var(--border-width-frame) solid var(--c-border-frame); border-radius:16px; background:var(--c-bg-card); box-shadow:0 4px 16px var(--c-frame-shadow); scroll-margin-top:calc(var(--bwm-header-height,77px) + 20px); }
+.bwm-agent-panel > .bwm-local-flow,.bwm-collaboration > .bwm-local-flow { display:flex; flex-direction:column; min-height:0; }
+.bwm-agent-panel[hidden] { display:none; }
+/* Reserve all desktop workflows so Agent selection cannot change the frame. */
+@media(min-width:1001px) {
+ .bwm-agent-panel[hidden] { display:grid; visibility:hidden; pointer-events:none; }
+}
+.bwm-panel-eyebrow { color:var(--c-accent-cyan); font:700 10px/1.6 'JetBrains Mono',monospace; letter-spacing:.1em; margin:0 0 10px; }
+.bwm-agent-panel__intro h3 { font:700 23px/1.3 'Space Grotesk',sans-serif; margin:0 0 10px; letter-spacing:-.02em; }
+.bwm-agent-panel__intro > p:not(.bwm-panel-eyebrow) { margin:0; color:var(--c-text-secondary); font-size:12px; line-height:1.75; }
+.bwm-agent-explorer .bwm-flow-scroll { overflow:clip; }
+.bwm-agent-panel .bwm-flow-scroll { flex:1; padding:18px 14px; }
+.bwm-agent-panel .bwm-flow-grid { min-width:0; gap:32px 24px; padding-inline:18px; }
+.bwm-agent-panel #flow-building { width:100%; max-width:550px; margin-inline:auto; column-gap:18px; }
+@media(min-width:1001px) {
+ #agent-panel-building .bwm-flow-scroll { display:flex; flex-direction:column; }
+ #agent-panel-building #flow-building { flex:1; grid-template-rows:repeat(6,min-content); align-content:space-between; row-gap:48px; }
+}
+.bwm-agent-panel .bwm-local-node { min-height:68px; padding:10px; gap:6px; }
+.bwm-local-flow { margin:0; min-width:0; border:var(--border-width-card) solid var(--c-border-accent); border-radius:12px; background:var(--c-bg-primary); overflow:hidden; }
+.bwm-local-flow figcaption { padding:16px 20px; border-top:1px solid var(--c-border-dim); color:var(--c-text-secondary); font-size:11px; line-height:1.8; }
+.bwm-local-node { display:flex; flex-direction:column; justify-content:center; gap:8px; min-width:0; min-height:78px; padding:13px; border:1px solid var(--c-border-accent); border-left:3px solid var(--flow-accent); border-radius:8px; background:var(--c-bg-card); box-shadow:0 3px 12px var(--c-tint-subtle); }
+.bwm-local-node__number { color:var(--flow-accent); font:600 8px/1.6 'JetBrains Mono',monospace; letter-spacing:.05em; }
+.bwm-local-node strong { font:600 11px/1.5 'Inter',sans-serif; color:var(--c-text-primary); overflow-wrap:anywhere; }
+.bwm-local-node--source { border-style:dashed; border-left-style:solid; }
+.bwm-local-node--output { border-left-width:5px; background:var(--c-bg-card-alt); }
+#flow-reprocessing { --flow-accent:var(--c-accent-amber); }
+#flow-reviewing { --flow-accent:var(--c-accent-orange); }
+#flow-rendering { --flow-accent:var(--c-accent-purple); }
+.bwm-flow-trace { position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; color:var(--flow-accent); z-index:0; }
+.bwm-flow-trace__base { fill:none; stroke:currentColor; stroke-width:1.6; opacity:.6; stroke-linecap:round; stroke-linejoin:round; }
+.bwm-flow-trace__return { stroke-dasharray:5 5; }
+.bwm-flow-trace__pulse { fill:none; stroke:currentColor; stroke-width:2.5; stroke-linecap:round; filter:drop-shadow(0 0 2px currentColor); opacity:0; }
+@media(max-width:1000px) { .bwm-agent-explorer { grid-template-columns:minmax(0,1fr); grid-template-rows:none; } .bwm-collaboration { grid-column:auto; grid-row:auto; grid-template-rows:auto auto; } .bwm-agent-details { display:block; grid-column:auto; grid-row:auto; } .bwm-agent-panel { grid-row:auto; grid-template-rows:auto auto; } .bwm-agent-map { width:100%; max-width:360px; margin-inline:auto; } .bwm-agent-panel__intro { max-width:700px; } }
+@media(max-width:680px) { .bwm-agent-panel .bwm-flow-scroll { overflow:clip; } .bwm-agent-panel .bwm-flow-grid { min-width:0; width:100%; grid-template-columns:minmax(0,1fr); gap:24px; padding-inline:20px; } .bwm-agent-panel .bwm-flow-grid > [data-flow-node] { grid-column:1; grid-row:auto; } }
+@media(max-width:680px) { .bwm-section { padding:64px 18px; } .bwm-input-modes { grid-template-columns:minmax(0,1fr); gap:10px; } .bwm-input-mode { padding:18px; } .bwm-input-mode p { font-size:12px; } .bwm-agent-panel,.bwm-collaboration { padding:18px; } .bwm-flow-scroll { padding:16px 8px; } .bwm-section-intro { margin-bottom:26px; } }
+@media(prefers-reduced-motion:reduce) { .bwm-flow-trace__pulse { opacity:0!important; } .bwm-agent-card { transition:none; } }
+
+.cases-section { overflow:hidden; }
+.case-browse-bar { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:12px; }
+.case-browse-bar p { margin:0; color:var(--c-text-muted); font-size:11px; line-height:1.7; }
+.case-motion-button { flex-shrink:0; border:1px solid var(--c-border-accent); border-radius:7px; padding:8px 12px; color:var(--c-accent-blue); background:var(--c-bg-card); font:500 10px 'JetBrains Mono',monospace; cursor:pointer; }
+.case-motion-button:focus-visible,.case-card:focus-visible { outline:2px solid var(--c-accent-cyan); outline-offset:3px; }
+.case-marquee { overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:none; mask-image:linear-gradient(to right,transparent,#000 2%,#000 98%,transparent); }
+.case-marquee::-webkit-scrollbar { display:none; }
+.case-track { display:flex; gap:18px; width:max-content; padding:18px 8px 28px; animation:case-scroll var(--case-duration,90s) linear infinite; animation-play-state:paused; }
+.case-marquee.is-in-view:not(.is-locked) .case-track { animation-play-state:running; }
+.case-marquee:hover .case-track { animation-play-state:paused!important; }
+@keyframes case-scroll { to { transform:translateX(calc(-1 * var(--case-distance,0px))); } }
+.case-card { display:flex; flex-direction:column; width:330px; flex:0 0 330px; border:2px solid var(--c-border-accent); border-radius:12px; overflow:hidden; background:var(--c-bg-card); color:var(--c-text-primary); padding:0; text-align:left; cursor:pointer; transition:border-color .2s,box-shadow .2s; }
+.case-card__preview { display:block; position:relative; width:100%; border-bottom:1px solid var(--c-border-dim); overflow:hidden; }
+.case-card video { display:block; width:100%; aspect-ratio:16/9; object-fit:contain; background:#080e18; pointer-events:none; transition:transform .22s,filter .22s; }
+.case-card__copy { display:flex; flex-direction:column; flex:1; gap:12px; padding:20px; }
+.case-card__type { color:var(--c-accent-cyan); font:600 9px/1.5 'JetBrains Mono',monospace; letter-spacing:.07em; }
+.case-card strong { font:600 15px/1.4 'Space Grotesk',sans-serif; }
+.case-details { margin-top:22px; }
+.case-detail { padding:28px; border:var(--border-width-frame) solid var(--c-border-frame); border-radius:16px; background:var(--c-bg-card); box-shadow:0 4px 16px var(--c-frame-shadow); }
+.case-detail[hidden] { display:none; }
+.case-detail__heading { display:flex; justify-content:space-between; align-items:center; gap:20px; padding-bottom:25px; margin-bottom:25px; border-bottom:1px solid var(--c-border-dim); }
+.case-detail h3 { font:700 clamp(22px,3vw,30px)/1.3 'Space Grotesk',sans-serif; margin:0; }
+.case-detail__process { color:var(--c-text-muted); font:500 9px/1.8 'JetBrains Mono',monospace; text-align:right; }
+.case-process-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:25px; }
+.case-process-step { min-width:0; position:relative; padding-top:34px; }
+.case-process-step__index { position:absolute; top:0; left:0; color:var(--c-accent-blue); font:700 10px 'JetBrains Mono',monospace; padding:4px 9px; background:var(--c-tint-blue); border-radius:5px; }
+#cases .site-media__frame { min-height:0; aspect-ratio:16/9; }
+#cases .site-media__frame img,#cases .site-media__frame video { height:100%; max-height:360px; }
+#cases .site-media__header { font-size:12px; }
+@media(max-width:680px) { .case-card { width:280px; flex-basis:280px; } .case-detail { padding:18px; } .case-detail__heading { flex-direction:column; align-items:flex-start; gap:8px; } .case-detail__process { text-align:left; margin:0; } .case-process-grid { grid-template-columns:minmax(0,1fr); gap:20px; } }
+@media(max-width:767px),(prefers-reduced-motion:reduce) { .case-marquee { mask-image:none; scroll-snap-type:x proximity; } .case-track { animation:none; padding-inline:4px; } .case-card { scroll-snap-align:start; } [data-case-clone] { display:none; } }
+@media(prefers-reduced-motion:reduce) { .case-card { transition:none; } }
+
+.eval-overview { min-width:0; border:var(--border-width-frame) solid var(--c-border-frame); border-radius:16px; background:var(--c-bg-card); box-shadow:0 4px 16px var(--c-frame-shadow); overflow:hidden; }
+.eval-metric-groups { display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); }
+.eval-group { display:flex; flex-direction:column; min-width:0; padding:24px; }
+.eval-group--vlm { border-left:1px solid var(--c-border-dim); }
+.eval-section-heading { margin-bottom:18px; }
+.eval-section-heading h3 { margin:0; font:700 18px/1.4 'Space Grotesk',sans-serif; }
+.eval-section-heading p { margin:8px 0 0; color:var(--c-text-muted); font-size:11px; line-height:1.6; }
+.eval-metrics { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; flex:1; }
+.eval-metric { min-width:0; padding:16px; border:var(--border-width-card) solid var(--c-border-accent); border-radius:10px; background:var(--c-bg-primary); }
+.eval-metric--action { grid-column:span 2; border-color:var(--c-accent-blue); background:linear-gradient(120deg,var(--c-tint-blue),transparent),var(--c-bg-primary); }
+.eval-metric > div { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+.eval-metric__index { font:600 9px 'JetBrains Mono',monospace; color:var(--c-text-muted); }
+.eval-metric__weight { color:var(--c-accent-cyan); font:700 11px 'JetBrains Mono',monospace; }
+.eval-metric h4,.eval-vlm-card h4 { margin:12px 0 8px; font:700 14px/1.4 'Space Grotesk',sans-serif; }
+.eval-metric p,.eval-vlm-card p { color:var(--c-text-secondary); font-size:12px; line-height:1.7; margin:0; }
+.eval-source-note { color:var(--c-text-muted); font-size:10px; line-height:1.8; margin:14px 0 0; }
+.eval-vlm-grid { display:grid; grid-template-rows:repeat(3,minmax(0,1fr)); gap:12px; flex:1; }
+.eval-vlm-card { min-width:0; padding:18px; border:var(--border-width-card) solid var(--c-border-accent); border-left:3px solid var(--c-accent-purple); border-radius:10px; background:var(--c-bg-primary); }
+.eval-vlm-card > span { color:var(--c-accent-purple); font:700 20px 'Space Grotesk',sans-serif; }
+.eval-summary { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.25fr); gap:24px; align-items:center; padding:18px 24px; border-top:1px solid var(--c-border-dim); background:var(--c-tint-blue); }
+.eval-summary > div > span { color:var(--c-text-muted); font-size:10px; }
+.eval-formula { margin:6px 0 0; font:500 clamp(12px,1.4vw,15px)/1.8 'JetBrains Mono',monospace; color:var(--c-accent-cyan); overflow-wrap:anywhere; }
+.eval-summary > p { margin:0; color:var(--c-text-secondary); font-size:11px; line-height:1.8; }
+@media(max-width:900px) { .eval-metric-groups { grid-template-columns:minmax(0,1fr); } .eval-group--vlm { border-left:0; border-top:1px solid var(--c-border-dim); } .eval-vlm-grid { grid-template-columns:repeat(3,minmax(0,1fr)); grid-template-rows:none; } }
+@media(max-width:680px) { .eval-group { padding:18px; } .eval-vlm-grid,.eval-summary { grid-template-columns:minmax(0,1fr); } .eval-summary { padding:18px; gap:12px; } .eval-section-heading h3 { font-size:17px; } }
+@media(max-width:540px) { .eval-metrics { grid-template-columns:minmax(0,1fr); } .eval-metric { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px 12px; padding:14px; } .eval-metric--action { grid-column:auto; } .eval-metric > div { grid-column:2; grid-row:1; } .eval-metric__index { display:none; } .eval-metric h4 { grid-column:1; grid-row:1; margin:0; } .eval-metric p { grid-column:1 / -1; } }
+.harness-diagrams { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:22px; align-items:stretch; }
+.harness-diagrams > .bwm-local-flow { display:flex; flex-direction:column; border:var(--border-width-frame) solid var(--c-border-frame); box-shadow:0 4px 16px var(--c-frame-shadow); }
+.harness-diagrams .bwm-diagram-heading > span:first-child { color:var(--c-accent-cyan); font-size:10px; }
+.harness-diagrams .bwm-flow-scroll { display:flex; flex-direction:column; justify-content:center; flex:1; padding:18px 14px; }
+.harness-diagrams .bwm-flow-grid { min-width:480px; column-gap:20px; padding-inline:18px; }
+.harness-diagrams .bwm-local-node { gap:6px; min-height:76px; padding:10px; }
+.harness-diagrams .bwm-local-node__number { font-size:7px; letter-spacing:.02em; overflow-wrap:anywhere; }
+.harness-diagrams .bwm-local-node strong { font-size:10px; }
+.harness-principles { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-top:22px; }
+.harness-principles article { padding:20px; border:var(--border-width-card) solid var(--c-border-accent); border-radius:12px; background:var(--c-bg-card); }
+.harness-principles article > span { font:600 9px 'JetBrains Mono',monospace; color:var(--c-accent-cyan); letter-spacing:.08em; }
+.harness-principles h3 { margin:12px 0 9px; font:700 16px 'Space Grotesk',sans-serif; }
+.harness-principles p { margin:0; color:var(--c-text-secondary); font-size:12px; line-height:1.85; }
+.harness-experience-intro h3 { margin:0 0 9px; font:700 17px 'Space Grotesk',sans-serif; color:var(--c-text-primary); }
+.harness-experience-intro p { margin:0 0 9px; }
+.harness-experience-intro p:last-child { margin-bottom:0; }
+#harness-control { --flow-accent:var(--c-accent-cyan); }
+#harness-experience { --flow-accent:var(--c-accent-purple); }
+@media(max-width:1100px) { .harness-diagrams { grid-template-columns:minmax(0,1fr); } }
+@media(max-width:680px) { .harness-principles { grid-template-columns:minmax(0,1fr); gap:12px; } .harness-principles article { padding:18px; } .harness-diagrams .bwm-flow-scroll { padding-inline:8px; } }
+/* Compact function cards; the shared components provide their structure. */
+.functions-section {
+  width: min(1120px, 100%);
+  margin-inline: auto;
+  padding: 88px 24px;
+}
+.functions-heading { text-align: center; }
+.functions-heading .site-heading__title, .functions-heading .site-heading__description { text-wrap: balance; }
+.functions-heading .site-heading__eyebrow { color: var(--c-accent-cyan); }
+.functions-heading .site-heading__description { max-width: 580px; margin-inline: auto; }
+.functions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 40px;
+}
+.functions-card { min-width: 0; }
+.functions-card .site-card__icon { flex-shrink: 0; }
+.functions-card--prepare .site-card__icon { color: var(--c-accent-orange); background: var(--c-tint-orange); }
+.functions-card--deliver .site-card__icon { color: var(--c-accent-green); background: var(--c-tint-emerald); }
+.functions-card .site-card__body { font-size: 0.8125rem; line-height: 1.7; }
+.functions-card .site-card__body > p + p { margin-top: 12px; }
+@media (max-width: 767px) {
+  .functions-section { padding: 64px 20px; }
+  .functions-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; margin-top: 28px; }
+}
+
+.feature-evidence-link { display:inline-flex; gap:6px; align-items:center; margin-top:18px; color:var(--c-accent-blue); font-size:11px; text-decoration:none; }
+.feature-evidence-link:hover { text-decoration:underline; text-underline-offset:4px; }
+.feature-evidence-link:focus-visible { outline:2px solid var(--c-accent-cyan); outline-offset:4px; }
+/* Shared feedback for controls that navigate or select visible content. */
+:is(.bwm-agent-card,.case-card,.bwm-nav-button,.bwm-hero__cta,.bwm-hero__resource,.case-motion-button,.toggle-btn,.site-pipeline__button,.site-switcher__button,.site-section-link,.functions-card .site-card) {
+ --interaction-color:var(--c-accent-blue); --interaction-lift:-3px;
+ cursor:pointer; touch-action:manipulation; -webkit-tap-highlight-color:var(--c-selection);
+ transition:border-color .18s,background-color .18s,box-shadow .18s,transform .18s;
+}
+.bwm-agent-card[data-agent] { --interaction-color:color-mix(in srgb,var(--agent-color) 85%,var(--c-text-primary)); --interaction-lift:0px; min-height:96px; justify-content:center; }
+.case-card[data-case-id] { --interaction-lift:-6px; }
+.bwm-nav-button[href],.toggle-btn[type],.case-motion-button[type] { --interaction-lift:-2px; }
+.functions-card--prepare .site-card { --interaction-color:var(--c-accent-orange); }
+.functions-card--deliver .site-card { --interaction-color:var(--c-accent-green); }
+/* Persistent selection uses a restrained colored ring without resizing cards. */
+.bwm-agent-card[aria-selected="true"],.case-card[aria-pressed="true"] {
+ border-color:var(--interaction-color);
+ background:linear-gradient(115deg,color-mix(in srgb,var(--interaction-color) 16%,transparent),color-mix(in srgb,var(--interaction-color) 6%,transparent)),var(--c-bg-card);
+ box-shadow:0 0 0 1px var(--interaction-color),0 6px 16px color-mix(in srgb,var(--interaction-color) 12%,transparent);
+}
+.bwm-agent-card[aria-selected="true"] { box-shadow:inset 1px 0 var(--interaction-color),0 0 0 1px var(--interaction-color),0 6px 16px color-mix(in srgb,var(--interaction-color) 12%,transparent); }
+.bwm-agent-card[aria-selected="true"] > strong { font-weight:800; }
+.case-card[aria-pressed="true"] strong { font-weight:700; }
+.case-card__preview-action { position:absolute; inset:0; display:grid; place-items:center; opacity:0; pointer-events:none; background:linear-gradient(transparent,rgba(8,14,24,.25)); transition:opacity .18s; }
+.case-card__preview-action > span { display:grid; place-items:center; width:48px; height:48px; border-radius:50%; border:1px solid rgba(255,255,255,.65); background:rgba(8,14,24,.72); color:white; font-size:25px; transform:translateY(6px); transition:transform .18s; }
+.functions-card .site-card { position:relative; }
+.feature-evidence-link { display:flex; justify-content:space-between; align-items:center; min-height:36px; padding:7px 10px; border:1px solid var(--c-border-accent); border-radius:7px; background:var(--c-tint-blue); font-weight:600; }
+.feature-evidence-link::after { content:''; position:absolute; inset:0; border-radius:12px; }
+.feature-evidence-link > span:last-child { transition:transform .18s; }
+.functions-card .site-card:has(.feature-evidence-link:focus-visible) { outline:3px solid var(--interaction-color); outline-offset:4px; border-color:var(--interaction-color); }
+:is(.bwm-agent-card,.case-card,.bwm-nav-button,.bwm-hero__cta,.bwm-hero__resource,.case-motion-button,.toggle-btn,.site-pipeline__button,.site-switcher__button,.site-section-link):focus-visible {
+ outline:3px solid var(--interaction-color); outline-offset:4px; border-color:var(--interaction-color); box-shadow:0 0 0 6px color-mix(in srgb,var(--interaction-color) 16%,transparent);
+}
+.case-card:focus-visible .case-card__preview-action { opacity:1; }
+.case-card:focus-visible .case-card__preview-action > span { transform:translateY(0); }
+@media(hover:hover) and (pointer:fine) {
+ :is(.bwm-agent-card,.case-card,.bwm-nav-button,.bwm-hero__cta,.bwm-hero__resource,.case-motion-button,.toggle-btn,.site-pipeline__button,.site-switcher__button,.site-section-link,.functions-card .site-card):hover {
+  border-color:var(--interaction-color); background-color:color-mix(in srgb,var(--interaction-color) 10%,var(--c-bg-card)); box-shadow:0 0 0 2px color-mix(in srgb,var(--interaction-color) 65%,transparent),0 14px 28px color-mix(in srgb,var(--interaction-color) 22%,transparent); transform:translateY(var(--interaction-lift));
+ }
+ :is(.bwm-agent-card[data-agent],.case-card[data-case-id]):hover {
+  background-color:color-mix(in srgb,var(--interaction-color) 13%,var(--c-bg-card));
+  box-shadow:0 0 0 2px color-mix(in srgb,var(--interaction-color) 85%,transparent),0 0 0 6px color-mix(in srgb,var(--interaction-color) 12%,transparent),0 16px 30px color-mix(in srgb,var(--interaction-color) 25%,transparent);
+ }
+ .bwm-agent-card[aria-selected="true"]:hover,.case-card[aria-pressed="true"]:hover {
+  background-color:color-mix(in srgb,var(--interaction-color) 18%,var(--c-bg-card));
+  box-shadow:inset 1px 0 var(--interaction-color),0 0 0 2px var(--interaction-color),0 0 0 5px color-mix(in srgb,var(--interaction-color) 8%,transparent),0 12px 24px color-mix(in srgb,var(--interaction-color) 18%,transparent);
+ }
+ .case-card:hover .case-card__preview-action { opacity:1; }
+ .case-card:hover .case-card__preview-action > span { transform:translateY(0); }
+ .case-card:hover video { transform:scale(1.025); filter:brightness(1.08); }
+ .functions-card .site-card:hover .feature-evidence-link { border-color:var(--interaction-color); background:color-mix(in srgb,var(--interaction-color) 15%,var(--c-bg-card)); text-decoration:none; }
+ .functions-card .site-card:hover .feature-evidence-link > span:last-child { transform:translate(3px,-2px); }
+}
+:is(.bwm-agent-card,.case-card,.bwm-nav-button,.bwm-hero__cta,.case-motion-button,.toggle-btn,.functions-card .site-card):active { transform:translateY(0); box-shadow:inset 0 0 0 2px var(--interaction-color); }
+@media(prefers-reduced-motion:reduce) {
+ :is(.bwm-agent-card,.case-card,.bwm-nav-button,.bwm-hero__cta,.bwm-hero__resource,.case-motion-button,.toggle-btn,.site-pipeline__button,.site-switcher__button,.site-section-link,.functions-card .site-card),.case-card video,.case-card__preview-action,.case-card__preview-action > span,.feature-evidence-link > span:last-child { transition:none; }
+ :is(.bwm-agent-card,.case-card,.bwm-nav-button,.bwm-hero__cta,.bwm-hero__resource,.case-motion-button,.toggle-btn,.site-pipeline__button,.site-switcher__button,.site-section-link,.functions-card .site-card):is(:hover,:focus-visible,:active),.case-card:hover video,.case-card__preview-action > span,.feature-evidence-link > span:last-child { transform:none; }
+}
+</style>
+</head>
+<body class="antialiased">
+
+<header class="bwm-header"><div class="bwm-header__inner">
+ <a class="bwm-brand" href="#top" aria-label="BWM-Forge"><img src="./photos/logo.png" alt="" width="40" height="40"><span>BWM-Forge</span></a>
+ <nav class="bwm-main-nav" aria-label="Explore sections"><a href="#pipeline" class="bwm-nav-button"><span class="material-symbols-outlined" aria-hidden="true">account_tree</span><span data-i18n="nav.pipeline">Pipeline</span></a>
+<a href="#cases" class="bwm-nav-button"><span class="material-symbols-outlined" aria-hidden="true">view_carousel</span><span data-i18n="nav.cases">Cases</span></a>
+<a href="#evaluation" class="bwm-nav-button"><span class="material-symbols-outlined" aria-hidden="true">monitoring</span><span data-i18n="nav.evaluation">Evaluation</span></a>
+<a href="#harness" class="bwm-nav-button"><span class="material-symbols-outlined" aria-hidden="true">hub</span><span data-i18n="nav.harness">Harness</span></a>
+<a href="#highlights" class="bwm-nav-button"><span class="material-symbols-outlined" aria-hidden="true">auto_awesome</span><span data-i18n="nav.highlights">Highlights</span></a></nav>
+ <div class="bwm-header__actions"><button class="toggle-btn" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle theme"><span class="material-symbols-outlined text-sm" aria-hidden="true">light_mode</span></button><button class="toggle-btn px-2 text-[10px] font-mono font-semibold tracking-wide" id="langToggle" type="button" title="Toggle language" aria-label="Toggle language">EN</button></div>
+</div></header>
+<main class="bwm-page-main">
+<section id="top" class="hero-section bwm-hero">
+ <div class="bwm-hero__grid" aria-hidden="true"></div><div class="bwm-hero__glow bwm-hero__glow--blue" aria-hidden="true"></div><div class="bwm-hero__glow bwm-hero__glow--orange" aria-hidden="true"></div>
+ <div class="bwm-hero__inner"><div class="bwm-hero__copy">
+  <div class="bwm-hero__badge"><span class="bwm-hero__badge-dot" aria-hidden="true"></span><span data-i18n="hero.badge">Embodied World Programming</span></div>
+  <h1 class="bwm-hero__title"><span class="bwm-hero__title-brand">BWM-Forge:</span><span class="bwm-hero__title-sub"><span data-i18n="hero.title">Agentic World Programming for Embodied Intelligence</span></span></h1>
+  <p class="bwm-hero__description"><span data-i18n="hero.desc">Program geometry, motion and viewpoints. Generate high-fidelity robot videos through a collaborative agent workflow.</span></p>
+  <div class="bwm-hero__actions"><a href="#pipeline" class="bwm-hero__cta bwm-hero__cta--primary"><span class="material-symbols-outlined" aria-hidden="true">account_tree</span><span data-i18n="hero.cta0">Explore Pipeline</span></a><a href="#cases" class="bwm-hero__cta bwm-hero__cta--secondary"><span class="material-symbols-outlined" aria-hidden="true">play_circle</span><span data-i18n="hero.cta1">View Cases</span></a><a id="technical-report-link" href="https://arxiv.org/" class="bwm-hero__cta bwm-hero__cta--secondary" target="_blank" rel="noopener noreferrer"><span class="material-symbols-outlined" aria-hidden="true">description</span><span data-i18n="hero.report">Technical Report</span></a><a id="github-link" href="https://github.com/" class="bwm-hero__cta bwm-hero__cta--secondary" target="_blank" rel="noopener noreferrer"><svg class="bwm-hero__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .75a11.25 11.25 0 0 0-3.56 21.92c.56.1.77-.24.77-.54v-2.1c-3.13.68-3.79-1.33-3.79-1.33-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.69.08-.69 1.13.08 1.73 1.16 1.73 1.16 1 1.72 2.63 1.22 3.27.93.1-.73.39-1.22.71-1.5-2.5-.29-5.13-1.25-5.13-5.56 0-1.23.44-2.23 1.16-3.02-.12-.28-.5-1.43.11-2.98 0 0 .95-.3 3.1 1.15a10.8 10.8 0 0 1 5.64 0c2.15-1.46 3.1-1.15 3.1-1.15.61 1.55.23 2.7.11 2.98.72.79 1.16 1.79 1.16 3.02 0 4.32-2.64 5.27-5.15 5.55.4.35.76 1.03.76 2.09v3.1c0 .3.2.65.78.54A11.25 11.25 0 0 0 12 .75Z"/></svg><span>GitHub</span></a></div>
+ </div><div class="bwm-hero__art" aria-hidden="true"><div class="bwm-hero__art-ring"></div><img src="./photos/logo.png" alt="" width="1254" height="1254" fetchpriority="high"></div></div>
+</section>
+
+<section id="pipeline" class="bwm-section">
+ <div class="bwm-section-intro"><p class="bwm-eyebrow">03 / PIPELINE · BWM-FORGE</p><h2><span data-i18n="pipeline.title">Four agents. One editable world.</span></h2><p><span data-i18n="pipeline.intro">From diverse evidence to an executable scene and a high-fidelity video. Select an agent in the collaboration map to explore its internal workflow.</span></p></div>
+ <figure class="bwm-evidence" aria-labelledby="evidence-caption">
+ <figcaption id="evidence-caption" data-i18n="pipeline.evidence.title">FROM EVIDENCE TO REPRESENTATION</figcaption>
+ <div class="bwm-evidence__grid" role="list"><div class="bwm-evidence__mapping" role="listitem">
+ <div class="bwm-evidence__endpoint"><svg class="bwm-evidence__icon" viewBox="0 0 64 56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="7" width="48" height="38" rx="3"/><circle cx="43" cy="18" r="4"/><path d="m8 37 15-15 13 13 8-8 12 12M25 50h14"/></svg><span data-i18n="pipeline.evidence.frame">First frame</span></div>
+ <span class="bwm-evidence__connector"><span class="sr-only" data-i18n="pipeline.evidence.to">maps to</span><svg viewBox="0 0 48 24" fill="none" aria-hidden="true"><path d="M3 12h40m-7-7 7 7-7 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="square" stroke-linejoin="miter"/></svg></span>
+ <div class="bwm-evidence__endpoint bwm-evidence__endpoint--result"><svg class="bwm-evidence__icon" viewBox="0 0 64 56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 32 26-15 26 15-26 15Z"/><path d="M6 32v6l26 15 26-15v-6M32 47v6M17 26l26 15M43 26 17 41" opacity=".35"/><path d="m22 19 12-7 12 7-12 7Z M22 19v14l12 7 12-7V19M34 26v14M11 15V6h9M53 15V6h-9"/></svg><span data-i18n="pipeline.evidence.scene">Spatial scene</span></div>
+</div>
+<div class="bwm-evidence__mapping" role="listitem">
+ <div class="bwm-evidence__endpoint"><svg class="bwm-evidence__icon" viewBox="0 0 64 56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="7" width="50" height="39" rx="3"/><path d="M7 17h50M13 12h1m5 0h1m5 0h1M15 25l5 5-5 5m11 0h16M18 51h28"/></svg><span data-i18n="pipeline.evidence.prompt">Prompt</span></div>
+ <span class="bwm-evidence__connector"><span class="sr-only" data-i18n="pipeline.evidence.to">maps to</span><svg viewBox="0 0 48 24" fill="none" aria-hidden="true"><path d="M3 12h40m-7-7 7 7-7 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="square" stroke-linejoin="miter"/></svg></span>
+ <div class="bwm-evidence__endpoint bwm-evidence__endpoint--result"><svg class="bwm-evidence__icon" viewBox="0 0 64 56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="13" y="5" width="38" height="46" rx="3"/><path d="m19 17 3 3 5-6m5 3h12m-25 13 3 3 5-6m5 3h12m-25 12 3 3 5-6m5 3h12"/></svg><span data-i18n="pipeline.evidence.task">Task instruction</span></div>
+</div>
+<div class="bwm-evidence__mapping" role="listitem">
+ <div class="bwm-evidence__endpoint"><svg class="bwm-evidence__icon" viewBox="0 0 64 56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="7" width="52" height="40" rx="3"/><path d="M6 16h52M6 38h52M16 7v9m16-9v9m16-9v9M16 38v9m16-9v9m16-9v9m-22-26 12 6-12 6Z"/></svg><span data-i18n="pipeline.evidence.video">Demonstration video</span></div>
+ <span class="bwm-evidence__connector"><span class="sr-only" data-i18n="pipeline.evidence.to">maps to</span><svg viewBox="0 0 48 24" fill="none" aria-hidden="true"><path d="M3 12h40m-7-7 7 7-7 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="square" stroke-linejoin="miter"/></svg></span>
+ <div class="bwm-evidence__endpoint bwm-evidence__endpoint--result"><svg class="bwm-evidence__icon" viewBox="0 0 64 56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="7" width="52" height="40" rx="3"/><circle cx="29" cy="17" r="4"/><path d="M29 21v11l-7 8m7-8 8 8M20 29l9-4 9 4 6-6M11 51h42"/><path d="M42 14h10m-4-4 4 4-4 4"/></svg><span data-i18n="pipeline.evidence.demo">Reference demonstration</span></div>
+</div></div>
+</figure>
+ <div class="bwm-input-modes"><div class="bwm-input-mode"><span class="bwm-input-mode__label">01</span><h3><span class="material-symbols-outlined" aria-hidden="true">image</span><span data-i18n="pipeline.mode0.title">Space-Semantics-Driven</span></h3><p><span data-i18n="pipeline.mode0.body">A reference image anchors the scene; robot assets and the task guide motion generation.</span></p><small class="bwm-input-mode__input" data-i18n="pipeline.mode0.input">First frame + task</small></div>
+<div class="bwm-input-mode"><span class="bwm-input-mode__label">02</span><h3><span class="material-symbols-outlined" aria-hidden="true">timeline</span><span data-i18n="pipeline.mode1.title">Motion Prior-Driven</span></h3><p><span data-i18n="pipeline.mode1.body">Add Parquet or NPZ motion data to specify joint or end-effector motion and timing.</span></p><small class="bwm-input-mode__input" data-i18n="pipeline.mode1.input">First frame + robot trajectory</small></div>
+<div class="bwm-input-mode"><span class="bwm-input-mode__label">03</span><h3><span class="material-symbols-outlined" aria-hidden="true">movie</span><span data-i18n="pipeline.mode2.title">Real Demonstration-Driven</span></h3><p><span data-i18n="pipeline.mode2.body">Use demonstrated actions and object-state changes to reconstruct the task for the target robot.</span></p><small class="bwm-input-mode__input" data-i18n="pipeline.mode2.input">Human demonstration video</small></div></div>
+ <div class="bwm-agent-explorer">
+ <div class="bwm-collaboration" aria-labelledby="collaboration-title">
+  <div class="bwm-agent-panel__intro"><p class="bwm-panel-eyebrow"><span data-i18n="pipeline.overview">MULTI-AGENT COLLABORATION</span></p><h3 id="collaboration-title"><span data-i18n="pipeline.overview.title">One shared workflow.</span></h3><p><span data-i18n="pipeline.overview.body">Four agent roles coordinate input processing, construction, review and rendering. Select an agent to explore its internal workflow.</span></p></div>
+  <figure class="bwm-local-flow"><div role="tablist" aria-label="Agent workflows" aria-orientation="vertical"><div class="bwm-flow-scroll" tabindex="0" aria-label="Process diagram"><div id="agent-overview" class="bwm-flow-grid bwm-agent-map" style="--flow-columns:1" data-flow-edges="reprocessing>building;building>reviewing;reviewing>building@right;building>rendering@bypass-left;reviewing>rendering;rendering>result" data-flow-routes="reprocessing building reviewing rendering result|reprocessing building reviewing building reviewing rendering result|reprocessing building rendering result">
+<button id="agent-tab-reprocessing" type="button" class="bwm-agent-card" style="--flow-col:1;--flow-row:1;--agent-color:var(--c-accent-amber)" data-flow-node="reprocessing" data-agent="reprocessing" role="tab" aria-selected="true" aria-controls="agent-panel-reprocessing" tabindex="0">
+ <span class="bwm-agent-card__top"><span>01 / AGENT</span><span class="material-symbols-outlined" aria-hidden="true">inventory_2</span></span>
+ <strong><span data-i18n="pipeline.agent.reprocessing">Reprocessing Agent</span></strong>
+</button>
+<button id="agent-tab-building" type="button" class="bwm-agent-card" style="--flow-col:1;--flow-row:2;--agent-color:var(--c-accent-blue)" data-flow-node="building" data-agent="building" role="tab" aria-selected="false" aria-controls="agent-panel-building" tabindex="-1">
+ <span class="bwm-agent-card__top"><span>02 / AGENT</span><span class="material-symbols-outlined" aria-hidden="true">view_in_ar</span></span>
+ <strong><span data-i18n="pipeline.agent.building">Building Agent</span></strong>
+</button>
+<button id="agent-tab-reviewing" type="button" class="bwm-agent-card" style="--flow-col:1;--flow-row:3;--agent-color:var(--c-accent-orange)" data-flow-node="reviewing" data-agent="reviewing" role="tab" aria-selected="false" aria-controls="agent-panel-reviewing" tabindex="-1">
+ <span class="bwm-agent-card__top"><span>04 / AGENT</span><span class="material-symbols-outlined" aria-hidden="true">fact_check</span></span>
+ <strong><span data-i18n="pipeline.agent.reviewing">Reviewing Agent</span></strong>
+</button>
+<button id="agent-tab-rendering" type="button" class="bwm-agent-card" style="--flow-col:1;--flow-row:4;--agent-color:var(--c-accent-purple)" data-flow-node="rendering" data-agent="rendering" role="tab" aria-selected="false" aria-controls="agent-panel-rendering" tabindex="-1">
+ <span class="bwm-agent-card__top"><span>03 / AGENT</span><span class="material-symbols-outlined" aria-hidden="true">movie</span></span>
+ <strong><span data-i18n="pipeline.agent.rendering">Rendering Agent</span></strong>
+</button>
+<div class="bwm-agent-result bwm-local-node" data-flow-node="result" style="--flow-col:1;--flow-row:5"><span class="material-symbols-outlined" aria-hidden="true">movie_filter</span><strong><span data-i18n="pipeline.output">High-fidelity task video</span></strong><span><span data-i18n="pipeline.output.note">Editable world · review record</span></span></div>
+</div></div></div><figcaption><span data-i18n="pipeline.legend">Solid: forward · dashed: feedback</span></figcaption></figure></div>
+ <div class="bwm-agent-details" aria-live="polite">
+ <article id="agent-panel-reprocessing" class="bwm-agent-panel" role="tabpanel" aria-labelledby="agent-tab-reprocessing" >
+  <div class="bwm-agent-panel__intro"><p class="bwm-panel-eyebrow">REPROCESSING AGENT</p><h3><span data-i18n="pipeline.reprocessing.title">Turn evidence into modeling context</span></h3><p><span data-i18n="pipeline.reprocessing.body">Validate assets, align motion conventions when trajectories are present, and parse visual evidence into entities, relations and cameras.</span></p></div>
+  <figure class="bwm-local-flow"><div class="bwm-flow-scroll" tabindex="0" aria-label="Process diagram"><div id="flow-reprocessing" class="bwm-flow-grid " data-flow-edges="source>assets;assets>motion;assets>visual;motion>conventions;visual>state;conventions>visual;state>handoff" data-flow-routes="source assets visual state handoff|source assets motion conventions visual state handoff">
+      <div class="bwm-local-node bwm-local-node--source" data-flow-node="source" style="--flow-col:2;--flow-row:1"><span class="bwm-local-node__number">INPUT</span><strong><span data-i18n="pipeline.prep.source">Robot assets + task + input evidence</span></strong></div>
+      <div class="bwm-local-node " data-flow-node="assets" style="--flow-col:2;--flow-row:2"><span class="bwm-local-node__number">URDF · MEDIA</span><strong><span data-i18n="pipeline.prep.assets">Asset validation</span></strong></div>
+      <div class="bwm-local-node " data-flow-node="motion" style="--flow-col:1;--flow-row:3"><span class="bwm-local-node__number">TYPE 1</span><strong><span data-i18n="pipeline.prep.motion">Motion consistency validation</span></strong></div>
+      <div class="bwm-local-node " data-flow-node="visual" style="--flow-col:2;--flow-row:5"><span class="bwm-local-node__number">TYPE 0 · 1 · 2</span><strong><span data-i18n="pipeline.prep.visual">First-frame / demonstration parsing</span></strong></div>
+      <div class="bwm-local-node " data-flow-node="conventions" style="--flow-col:1;--flow-row:4"><span class="bwm-local-node__number">MOTION</span><strong><span data-i18n="pipeline.prep.conventions">Joint mapping, units and timing</span></strong></div>
+      <div class="bwm-local-node " data-flow-node="state" style="--flow-col:2;--flow-row:6"><span class="bwm-local-node__number">SCENE STATE</span><strong><span data-i18n="pipeline.prep.state">Entities, relations and cameras</span></strong></div>
+      <div class="bwm-local-node bwm-local-node--output" data-flow-node="handoff" style="--flow-col:2;--flow-row:7"><span class="bwm-local-node__number">OUTPUT</span><strong><span data-i18n="pipeline.prep.handoff">Unified modeling context</span></strong></div>
+</div></div><figcaption><span data-i18n="pipeline.reprocessing.note">First-frame and demonstration routes share visual parsing. Type 1 adds motion consistency checks.</span></figcaption></figure>
+</article>
+ <article id="agent-panel-building" class="bwm-agent-panel" role="tabpanel" aria-labelledby="agent-tab-building" hidden>
+  <div class="bwm-agent-panel__intro"><p class="bwm-panel-eyebrow">BUILDING AGENT</p><h3><span data-i18n="pipeline.building.title">Construct, compose and animate</span></h3><p><span data-i18n="pipeline.building.body">Scene planning and refinement lead to robot import, composition and motion validation. Scene and composition reviews feed corrections back to the relevant steps.</span></p></div>
+  <figure class="bwm-local-flow"><div class="bwm-flow-scroll" tabindex="0" aria-label="Process diagram"><div id="flow-building" class="bwm-flow-grid" style="--flow-columns:4" data-flow-edges="scene-plan>entities;entities>scene-refine;scene-refine>scene-review;scene-review>robot;robot>plan;plan>merge;merge>animate;animate>checks;checks>review;review>proxy;scene-review>scene-plan@left;review>plan@right" data-flow-routes="scene-plan entities scene-refine scene-review robot plan merge animate checks review proxy|scene-plan entities scene-refine scene-review scene-plan entities scene-refine scene-review robot plan merge animate checks review proxy|scene-plan entities scene-refine scene-review robot plan merge animate checks review plan merge animate checks review proxy">
+      <div class="bwm-local-node" data-flow-node="scene-plan" style="--flow-col:2 / span 2;--flow-row:1"><span class="bwm-local-node__number">SCENE PLANNING</span><strong><span data-i18n="pipeline.build.scene.plan">Scene planning</span></strong></div>
+      <div class="bwm-local-node" data-flow-node="entities" style="--flow-col:1 / span 2;--flow-row:2"><span class="bwm-local-node__number">ENTITY GEOMETRY</span><strong><span data-i18n="pipeline.build.scene.entities">Entity geometry refinement</span></strong></div>
+      <div class="bwm-local-node" data-flow-node="scene-refine" style="--flow-col:3 / span 2;--flow-row:2"><span class="bwm-local-node__number">SCENE REFINEMENT</span><strong><span data-i18n="pipeline.build.scene.refine">Scene refinement</span></strong></div>
+      <div class="bwm-local-node" data-flow-node="scene-review" style="--flow-col:1 / span 2;--flow-row:3"><span class="bwm-local-node__number">SCENE REVIEW</span><strong><span data-i18n="pipeline.build.scene.review">Scene project + review</span></strong></div>
+      <div class="bwm-local-node" data-flow-node="robot" style="--flow-col:3 / span 2;--flow-row:3"><span class="bwm-local-node__number">ROBOT ASSET</span><strong><span data-i18n="pipeline.build.robot">Robot import</span></strong></div>
+      <div class="bwm-local-node" data-flow-node="plan" style="--flow-col:1 / span 2;--flow-row:4"><span class="bwm-local-node__number">COMPOSITION PLANNING</span><strong><span data-i18n="pipeline.build.plan">Plan space, motion and cameras</span></strong></div>
+      <div class="bwm-local-node" data-flow-node="merge" style="--flow-col:3 / span 2;--flow-row:4"><span class="bwm-local-node__number">PROJECT MERGING</span><strong><span data-i18n="pipeline.build.merge">Merge projects; refine alignment</span></strong></div>
+      <div class="bwm-local-node" data-flow-node="animate" style="--flow-col:1 / span 2;--flow-row:5"><span class="bwm-local-node__number">ANIMATION</span><strong><span data-i18n="pipeline.build.animate">Robot, object and camera timelines</span></strong></div>
+      <div class="bwm-local-node" data-flow-node="checks" style="--flow-col:3 / span 2;--flow-row:5"><span class="bwm-local-node__number">VALIDATION</span><strong><span data-i18n="pipeline.build.checks">Keyframes, contact and motion continuity</span></strong></div>
+      <div class="bwm-local-node" data-flow-node="review" style="--flow-col:1 / span 2;--flow-row:6"><span class="bwm-local-node__number">REVIEW</span><strong><span data-i18n="pipeline.build.review">Reviewing Agent + user feedback</span></strong></div>
+      <div class="bwm-local-node bwm-local-node--output" data-flow-node="proxy" style="--flow-col:3 / span 2;--flow-row:6"><span class="bwm-local-node__number">OUTPUT</span><strong><span data-i18n="pipeline.build.proxy">Editable scene + Proxy Video</span></strong></div>
+</div></div><figcaption><span data-i18n="pipeline.building.note">Scene refinement compares reference-camera renders with the input image. Robot import preserves the full asset; composition uses both reviewed projects. Accepted steps supply evidence for experience summaries.</span></figcaption></figure>
+</article>
+ <article id="agent-panel-rendering" class="bwm-agent-panel" role="tabpanel" aria-labelledby="agent-tab-rendering" hidden>
+  <div class="bwm-agent-panel__intro"><p class="bwm-panel-eyebrow">RENDERING AGENT</p><h3><span data-i18n="pipeline.rendering.title">Add appearance, then evaluate</span></h3><p><span data-i18n="pipeline.rendering.body">The Proxy Video guides geometry, motion and timing. The reference image and prompt guide appearance. Scores and user feedback support iterative refinement.</span></p></div>
+  <figure class="bwm-local-flow"><div class="bwm-flow-scroll" tabindex="0" aria-label="Process diagram"><div id="flow-rendering" class="bwm-flow-grid " data-flow-edges="proxy>generate;frame>generate;generate>objective;objective>vlm;objective>correction;correction>recheck;recheck>vlm@left;recheck>manual;vlm>combined;combined>user;manual>user;user>final;user>generate@right" data-flow-routes="proxy generate objective vlm combined user final|frame generate objective correction recheck vlm combined user final|proxy generate objective correction recheck manual user final|proxy generate objective vlm combined user generate objective vlm combined user final">
+      <div class="bwm-local-node bwm-local-node--source" data-flow-node="proxy" style="--flow-col:1;--flow-row:1"><span class="bwm-local-node__number">MOTION</span><strong><span data-i18n="pipeline.render.proxy">Proxy Video: structure and motion</span></strong></div>
+      <div class="bwm-local-node bwm-local-node--source" data-flow-node="frame" style="--flow-col:3;--flow-row:1"><span class="bwm-local-node__number">APPEARANCE</span><strong><span data-i18n="pipeline.render.frame">Reference image + prompt</span></strong></div>
+      <div class="bwm-local-node " data-flow-node="generate" style="--flow-col:2;--flow-row:2"><span class="bwm-local-node__number">GENERATE</span><strong><span data-i18n="pipeline.render.generate">Experience-guided video generation</span></strong></div>
+      <div class="bwm-local-node " data-flow-node="objective" style="--flow-col:2;--flow-row:3"><span class="bwm-local-node__number">Sobj · PASS / RETRY / REJECT</span><strong><span data-i18n="pipeline.render.objective">Seven objective metrics</span></strong></div>
+      <div class="bwm-local-node " data-flow-node="vlm" style="--flow-col:1;--flow-row:4"><span class="bwm-local-node__number">Sobj ≥ τ · VLM</span><strong><span data-i18n="pipeline.render.vlm">Visual and action assessment</span></strong></div>
+      <div class="bwm-local-node " data-flow-node="correction" style="--flow-col:3;--flow-row:4"><span class="bwm-local-node__number">INITIAL Sobj < τ</span><strong><span data-i18n="pipeline.render.correction">Optimize prompt; regenerate once</span></strong></div>
+      <div class="bwm-local-node " data-flow-node="combined" style="--flow-col:1;--flow-row:5"><span class="bwm-local-node__number">WEIGHTED SCORE</span><strong><span data-i18n="pipeline.render.combined">Combine objective + VLM scores</span></strong></div>
+      <div class="bwm-local-node " data-flow-node="recheck" style="--flow-col:3;--flow-row:5"><span class="bwm-local-node__number">ONE AUTOMATIC CORRECTION</span><strong><span data-i18n="pipeline.render.recheck">Re-evaluate the corrected video</span></strong></div>
+      <div class="bwm-local-node " data-flow-node="manual" style="--flow-col:3;--flow-row:6"><span class="bwm-local-node__number">NO FURTHER AUTO CORRECTION</span><strong><span data-i18n="pipeline.render.manual">Still below τ: human review</span></strong></div>
+      <div class="bwm-local-node " data-flow-node="user" style="--flow-col:2;--flow-row:7"><span class="bwm-local-node__number">USER FEEDBACK</span><strong><span data-i18n="pipeline.render.user">User confirms or requests revision</span></strong></div>
+      <div class="bwm-local-node bwm-local-node--output" data-flow-node="final" style="--flow-col:2;--flow-row:8"><span class="bwm-local-node__number">OUTPUT</span><strong><span data-i18n="pipeline.render.final">Final video + stage summary</span></strong></div>
+</div></div><figcaption><span data-i18n="pipeline.rendering.note">Only the initial low-scoring candidate receives one automatic correction. A corrected candidate below τ goes to human review; user revision rounds do not trigger another automatic correction.</span></figcaption></figure>
+</article>
+ <article id="agent-panel-reviewing" class="bwm-agent-panel" role="tabpanel" aria-labelledby="agent-tab-reviewing" hidden>
+  <div class="bwm-agent-panel__intro"><p class="bwm-panel-eyebrow">REVIEWING AGENT</p><h3><span data-i18n="pipeline.reviewing.title">Inspect evidence and repair locally</span></h3><p><span data-i18n="pipeline.reviewing.body">Collect visual evidence, revisit numerical and physical evidence in execution logs, and correct localized defects. Preserve the review record and unresolved issues for user feedback.</span></p></div>
+  <figure class="bwm-local-flow"><div class="bwm-flow-scroll" tabindex="0" aria-label="Process diagram"><div id="flow-reviewing" class="bwm-flow-grid " data-flow-edges="source>visual;visual>numeric;visual>assess;numeric>assess;assess>repair;assess>accept;repair>preview;preview>assess@left;accept>user;user>next;user>repair@right" data-flow-routes="source visual assess accept user next|source visual numeric assess repair preview assess accept user next|source visual assess accept user repair preview assess accept user next">
+      <div class="bwm-local-node bwm-local-node--source" data-flow-node="source" style="--flow-col:2;--flow-row:1"><span class="bwm-local-node__number">EVIDENCE</span><strong><span data-i18n="pipeline.review.source">Current project, task and feedback</span></strong></div>
+      <div class="bwm-local-node " data-flow-node="visual" style="--flow-col:2;--flow-row:2"><span class="bwm-local-node__number">VISUAL</span><strong><span data-i18n="pipeline.review.visual">Keyframes + random-frame inspection</span></strong></div>
+      <div class="bwm-local-node " data-flow-node="numeric" style="--flow-col:3;--flow-row:3"><span class="bwm-local-node__number">WHEN VISUAL EVIDENCE CONFLICTS</span><strong><span data-i18n="pipeline.review.numeric">Execution logs + recorded trajectories</span></strong></div>
+      <div class="bwm-local-node " data-flow-node="assess" style="--flow-col:2;--flow-row:4"><span class="bwm-local-node__number">LOCATE DEFECTS</span><strong><span data-i18n="pipeline.review.assess">Check layout, structure and motion</span></strong></div>
+      <div class="bwm-local-node " data-flow-node="repair" style="--flow-col:1;--flow-row:5"><span class="bwm-local-node__number">REPAIR</span><strong><span data-i18n="pipeline.review.repair">Make targeted local corrections</span></strong></div>
+      <div class="bwm-local-node " data-flow-node="accept" style="--flow-col:3;--flow-row:5"><span class="bwm-local-node__number">REVIEW RECORD</span><strong><span data-i18n="pipeline.review.accept">Record review and unresolved issues</span></strong></div>
+      <div class="bwm-local-node " data-flow-node="preview" style="--flow-col:1;--flow-row:6"><span class="bwm-local-node__number">RECHECK</span><strong><span data-i18n="pipeline.review.preview">Render an updated preview</span></strong></div>
+      <div class="bwm-local-node " data-flow-node="user" style="--flow-col:3;--flow-row:6"><span class="bwm-local-node__number">HUMAN REVIEW</span><strong><span data-i18n="pipeline.review.user">Optional user feedback</span></strong></div>
+      <div class="bwm-local-node bwm-local-node--output" data-flow-node="next" style="--flow-col:2;--flow-row:7"><span class="bwm-local-node__number">OUTPUT</span><strong><span data-i18n="pipeline.review.next">Advance the stage or rendering</span></strong></div>
+</div></div><figcaption><span data-i18n="pipeline.reviewing.note">Review applies after scene construction, robot import and composition. Updated previews are checked again before advancing.</span></figcaption></figure>
+</article>
+ </div>
+ </div>
+</section><div class="section-divider"></div>
+<section id="cases" class="bwm-section cases-section">
+ <div class="bwm-section-intro"><p class="bwm-eyebrow">04 / CASES</p><h2><span data-i18n="cases.title">See the world take shape.</span></h2><p><span data-i18n="cases.description">Fourteen tasks across three input modes. Choose a result to explore its available references, modeling previews, Proxy Video and render versions.</span></p></div>
+ <div class="case-browse-bar"><p><span data-i18n="cases.hint">Click a card to view its process and pause the gallery. Click elsewhere to resume.</span></p><button id="caseMotionToggle" type="button" aria-pressed="false" class="case-motion-button"><span data-i18n="cases.pause">Pause gallery</span></button></div>
+ <div id="caseMarquee" class="case-marquee" role="region" aria-label="Case gallery"><div id="caseTrack" class="case-track">
+<button type="button" class="case-card" data-case-id="chemistry" aria-pressed="true" aria-controls="case-panel-chemistry">
+  <span class="case-card__preview"><video data-preview-src="media/cases/type0/chemistry/render-v1.mp4" poster="media/cases/type0/chemistry/render-v1-poster.png" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video><span class="case-card__preview-action" aria-hidden="true"><span class="material-symbols-outlined">ads_click</span></span></span>
+  <span class="case-card__copy"><span class="case-card__type" data-i18n="cases.type0">TYPE 0 · FIRST FRAME</span><strong><span data-i18n="cases.task.chemistry">Chemistry experiment</span></strong></span>
+</button>
+<button type="button" class="case-card" data-case-id="kitchen-drawer" aria-pressed="false" aria-controls="case-panel-kitchen-drawer">
+  <span class="case-card__preview"><video data-preview-src="media/cases/type0/kitchen-drawer/render-v1.mp4" poster="media/cases/type0/kitchen-drawer/render-v1-poster.png" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video><span class="case-card__preview-action" aria-hidden="true"><span class="material-symbols-outlined">ads_click</span></span></span>
+  <span class="case-card__copy"><span class="case-card__type" data-i18n="cases.type0">TYPE 0 · FIRST FRAME</span><strong><span data-i18n="cases.task.kitchen-drawer">Kitchen drawer retrieval</span></strong></span>
+</button>
+<button type="button" class="case-card" data-case-id="kitchen-pickup" aria-pressed="false" aria-controls="case-panel-kitchen-pickup">
+  <span class="case-card__preview"><video data-preview-src="media/cases/type0/kitchen-pickup/render-v1.mp4" poster="media/cases/type0/kitchen-pickup/render-v1-poster.png" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video><span class="case-card__preview-action" aria-hidden="true"><span class="material-symbols-outlined">ads_click</span></span></span>
+  <span class="case-card__copy"><span class="case-card__type" data-i18n="cases.type0">TYPE 0 · FIRST FRAME</span><strong><span data-i18n="cases.task.kitchen-pickup">Kitchen object pickup</span></strong></span>
+</button>
+<button type="button" class="case-card" data-case-id="desk-drawer" aria-pressed="false" aria-controls="case-panel-desk-drawer">
+  <span class="case-card__preview"><video data-preview-src="media/cases/type1/desk-drawer/render.mp4" poster="media/cases/type1/desk-drawer/render-poster.png" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video><span class="case-card__preview-action" aria-hidden="true"><span class="material-symbols-outlined">ads_click</span></span></span>
+  <span class="case-card__copy"><span class="case-card__type" data-i18n="cases.type1">TYPE 1 · TRAJECTORY</span><strong><span data-i18n="cases.task.desk-drawer">Desk drawer retrieval</span></strong></span>
+</button>
+<button type="button" class="case-card" data-case-id="pouring" aria-pressed="false" aria-controls="case-panel-pouring">
+  <span class="case-card__preview"><video data-preview-src="media/cases/type1/pouring/render.mp4" poster="media/cases/type1/pouring/render-poster.png" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video><span class="case-card__preview-action" aria-hidden="true"><span class="material-symbols-outlined">ads_click</span></span></span>
+  <span class="case-card__copy"><span class="case-card__type" data-i18n="cases.type1">TYPE 1 · TRAJECTORY</span><strong><span data-i18n="cases.task.pouring">Liquid pouring</span></strong></span>
+</button>
+<button type="button" class="case-card" data-case-id="meeting-room" aria-pressed="false" aria-controls="case-panel-meeting-room">
+  <span class="case-card__preview"><video data-preview-src="media/cases/type1/meeting-room/render.mp4" poster="media/cases/type1/meeting-room/render-poster.png" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video><span class="case-card__preview-action" aria-hidden="true"><span class="material-symbols-outlined">ads_click</span></span></span>
+  <span class="case-card__copy"><span class="case-card__type" data-i18n="cases.type1">TYPE 1 · TRAJECTORY</span><strong><span data-i18n="cases.task.meeting-room">Meeting room quadruped</span></strong></span>
+</button>
+<button type="button" class="case-card" data-case-id="factory" aria-pressed="false" aria-controls="case-panel-factory">
+  <span class="case-card__preview"><video data-preview-src="media/cases/type1/factory/render.mp4" poster="media/cases/type1/factory/render-poster.png" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video><span class="case-card__preview-action" aria-hidden="true"><span class="material-symbols-outlined">ads_click</span></span></span>
+  <span class="case-card__copy"><span class="case-card__type" data-i18n="cases.type1">TYPE 1 · TRAJECTORY</span><strong><span data-i18n="cases.task.factory">Complex factory quadruped</span></strong></span>
+</button>
+<button type="button" class="case-card" data-case-id="office-quadruped" aria-pressed="false" aria-controls="case-panel-office-quadruped">
+  <span class="case-card__preview"><video data-preview-src="media/cases/type1/office-quadruped/render-web.mp4" poster="media/cases/type1/office-quadruped/render-poster.png" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video><span class="case-card__preview-action" aria-hidden="true"><span class="material-symbols-outlined">ads_click</span></span></span>
+  <span class="case-card__copy"><span class="case-card__type" data-i18n="cases.type1">TYPE 1 · TRAJECTORY</span><strong><span data-i18n="cases.task.office-quadruped">Complex office quadruped</span></strong></span>
+</button>
+<button type="button" class="case-card" data-case-id="office-humanoid" aria-pressed="false" aria-controls="case-panel-office-humanoid">
+  <span class="case-card__preview"><video data-preview-src="media/cases/type1/office-humanoid/render.mp4" poster="media/cases/type1/office-humanoid/render-poster.png" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video><span class="case-card__preview-action" aria-hidden="true"><span class="material-symbols-outlined">ads_click</span></span></span>
+  <span class="case-card__copy"><span class="case-card__type" data-i18n="cases.type1">TYPE 1 · TRAJECTORY</span><strong><span data-i18n="cases.task.office-humanoid">Complex office humanoid</span></strong></span>
+</button>
+<button type="button" class="case-card" data-case-id="microwave" aria-pressed="false" aria-controls="case-panel-microwave">
+  <span class="case-card__preview"><video data-preview-src="media/cases/type2/microwave/render-v1.mp4" poster="media/cases/type2/microwave/render-v1-poster.png" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video><span class="case-card__preview-action" aria-hidden="true"><span class="material-symbols-outlined">ads_click</span></span></span>
+  <span class="case-card__copy"><span class="case-card__type" data-i18n="cases.type2">TYPE 2 · DEMONSTRATION</span><strong><span data-i18n="cases.task.microwave">Open the microwave</span></strong></span>
+</button>
+<button type="button" class="case-card" data-case-id="chess-collision" aria-pressed="false" aria-controls="case-panel-chess-collision">
+  <span class="case-card__preview"><video data-preview-src="media/cases/type2/chess-collision/render.mp4" poster="media/cases/type2/chess-collision/render-poster.png" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video><span class="case-card__preview-action" aria-hidden="true"><span class="material-symbols-outlined">ads_click</span></span></span>
+  <span class="case-card__copy"><span class="case-card__type" data-i18n="cases.type2">TYPE 2 · DEMONSTRATION</span><strong><span data-i18n="cases.task.chess-collision">Chess-piece collision</span></strong></span>
+</button>
+<button type="button" class="case-card" data-case-id="filtration" aria-pressed="false" aria-controls="case-panel-filtration">
+  <span class="case-card__preview"><video data-preview-src="media/cases/type2/filtration/render.mp4" poster="media/cases/type2/filtration/render-poster.png" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video><span class="case-card__preview-action" aria-hidden="true"><span class="material-symbols-outlined">ads_click</span></span></span>
+  <span class="case-card__copy"><span class="case-card__type" data-i18n="cases.type2">TYPE 2 · DEMONSTRATION</span><strong><span data-i18n="cases.task.filtration">Dual-arm filtration</span></strong></span>
+</button>
+<button type="button" class="case-card" data-case-id="suture" aria-pressed="false" aria-controls="case-panel-suture">
+  <span class="case-card__preview"><video data-preview-src="media/cases/type2/suture/render-v1.mp4" poster="media/cases/type2/suture/render-v1-poster.png" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video><span class="case-card__preview-action" aria-hidden="true"><span class="material-symbols-outlined">ads_click</span></span></span>
+  <span class="case-card__copy"><span class="case-card__type" data-i18n="cases.type2">TYPE 2 · DEMONSTRATION</span><strong><span data-i18n="cases.task.suture">Explicit suture manipulation</span></strong></span>
+</button>
+<button type="button" class="case-card" data-case-id="door-and-sit" aria-pressed="false" aria-controls="case-panel-door-and-sit">
+  <span class="case-card__preview"><video data-preview-src="media/cases/type2/door-and-sit/render.mp4" poster="media/cases/type2/door-and-sit/render-poster.png" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video><span class="case-card__preview-action" aria-hidden="true"><span class="material-symbols-outlined">ads_click</span></span></span>
+  <span class="case-card__copy"><span class="case-card__type" data-i18n="cases.type2">TYPE 2 · DEMONSTRATION</span><strong><span data-i18n="cases.task.door-and-sit">Open the door and sit down</span></strong></span>
+</button></div></div>
+ <p id="caseSelectionStatus" class="sr-only" role="status" aria-live="polite"></p>
+ <div id="caseDetails" class="case-details">
+<article id="case-panel-chemistry" class="case-detail" data-case-panel="chemistry" aria-labelledby="case-title-chemistry">
+ <div class="case-detail__heading"><div><p class="bwm-eyebrow" data-i18n="cases.type0">TYPE 0 · FIRST FRAME</p><h3 id="case-title-chemistry"><span data-i18n="cases.task.chemistry">Chemistry experiment</span></h3></div><p class="case-detail__process" data-i18n="cases.process">FROM EVIDENCE TO RESULT</p></div>
+ <div class="case-process-grid"><div class="case-process-step"><span class="case-process-step__index">01</span><site-image-window src="media/cases/type0/chemistry/first-frame.jpeg" title-key="cases.source" alt-key="cases.source"></site-image-window></div><div class="case-process-step"><span class="case-process-step__index">02</span><site-video-window src="media/cases/type0/chemistry/white-model.mp4" poster="media/cases/type0/chemistry/white-model-poster.png" preload="none" title-key="cases.proxy"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">03</span><site-video-window src="media/cases/type0/chemistry/render-v0.mp4" poster="media/cases/type0/chemistry/render-v0-poster.png" preload="none" title-key="cases.render-v0"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">04</span><site-video-window src="media/cases/type0/chemistry/render-v1.mp4" poster="media/cases/type0/chemistry/render-v1-poster.png" preload="none" title-key="cases.render-v1"></site-video-window></div></div>
+</article>
+<article id="case-panel-kitchen-drawer" class="case-detail" data-case-panel="kitchen-drawer" aria-labelledby="case-title-kitchen-drawer" hidden>
+ <div class="case-detail__heading"><div><p class="bwm-eyebrow" data-i18n="cases.type0">TYPE 0 · FIRST FRAME</p><h3 id="case-title-kitchen-drawer"><span data-i18n="cases.task.kitchen-drawer">Kitchen drawer retrieval</span></h3></div><p class="case-detail__process" data-i18n="cases.process">FROM EVIDENCE TO RESULT</p></div>
+ <div class="case-process-grid"><div class="case-process-step"><span class="case-process-step__index">01</span><site-image-window src="media/cases/type0/kitchen-drawer/first-frame.png" title-key="cases.source" alt-key="cases.source"></site-image-window></div><div class="case-process-step"><span class="case-process-step__index">02</span><site-video-window src="media/cases/type0/kitchen-drawer/white-model.mp4" poster="media/cases/type0/kitchen-drawer/white-model-poster.png" preload="none" title-key="cases.proxy"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">03</span><site-video-window src="media/cases/type0/kitchen-drawer/render-v0.mp4" poster="media/cases/type0/kitchen-drawer/render-v0-poster.png" preload="none" title-key="cases.render-v0"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">04</span><site-video-window src="media/cases/type0/kitchen-drawer/render-v1.mp4" poster="media/cases/type0/kitchen-drawer/render-v1-poster.png" preload="none" title-key="cases.render-v1"></site-video-window></div></div>
+</article>
+<article id="case-panel-kitchen-pickup" class="case-detail" data-case-panel="kitchen-pickup" aria-labelledby="case-title-kitchen-pickup" hidden>
+ <div class="case-detail__heading"><div><p class="bwm-eyebrow" data-i18n="cases.type0">TYPE 0 · FIRST FRAME</p><h3 id="case-title-kitchen-pickup"><span data-i18n="cases.task.kitchen-pickup">Kitchen object pickup</span></h3></div><p class="case-detail__process" data-i18n="cases.process">FROM EVIDENCE TO RESULT</p></div>
+ <div class="case-process-grid"><div class="case-process-step"><span class="case-process-step__index">01</span><site-image-window src="media/cases/type0/kitchen-pickup/first-frame.png" title-key="cases.source" alt-key="cases.source"></site-image-window></div><div class="case-process-step"><span class="case-process-step__index">02</span><site-video-window src="media/cases/type0/kitchen-pickup/white-model.mp4" poster="media/cases/type0/kitchen-pickup/white-model-poster.png" preload="none" title-key="cases.proxy"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">03</span><site-video-window src="media/cases/type0/kitchen-pickup/render-v0.mp4" poster="media/cases/type0/kitchen-pickup/render-v0-poster.png" preload="none" title-key="cases.render-v0"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">04</span><site-video-window src="media/cases/type0/kitchen-pickup/render-v1.mp4" poster="media/cases/type0/kitchen-pickup/render-v1-poster.png" preload="none" title-key="cases.render-v1"></site-video-window></div></div>
+</article>
+<article id="case-panel-desk-drawer" class="case-detail" data-case-panel="desk-drawer" aria-labelledby="case-title-desk-drawer" hidden>
+ <div class="case-detail__heading"><div><p class="bwm-eyebrow" data-i18n="cases.type1">TYPE 1 · TRAJECTORY</p><h3 id="case-title-desk-drawer"><span data-i18n="cases.task.desk-drawer">Desk drawer retrieval</span></h3></div><p class="case-detail__process" data-i18n="cases.process">FROM EVIDENCE TO RESULT</p></div>
+ <div class="case-process-grid"><div class="case-process-step"><span class="case-process-step__index">01</span><site-image-window src="media/cases/type1/desk-drawer/first-frame.png" title-key="cases.source" alt-key="cases.source"></site-image-window></div><div class="case-process-step"><span class="case-process-step__index">02</span><site-video-window src="media/cases/type1/desk-drawer/white-model.mp4" poster="media/cases/type1/desk-drawer/white-model-poster.png" preload="none" title-key="cases.proxy"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">03</span><site-video-window src="media/cases/type1/desk-drawer/render.mp4" poster="media/cases/type1/desk-drawer/render-poster.png" preload="none" title-key="cases.render"></site-video-window></div></div>
+</article>
+<article id="case-panel-pouring" class="case-detail" data-case-panel="pouring" aria-labelledby="case-title-pouring" hidden>
+ <div class="case-detail__heading"><div><p class="bwm-eyebrow" data-i18n="cases.type1">TYPE 1 · TRAJECTORY</p><h3 id="case-title-pouring"><span data-i18n="cases.task.pouring">Liquid pouring</span></h3></div><p class="case-detail__process" data-i18n="cases.process">FROM EVIDENCE TO RESULT</p></div>
+ <div class="case-process-grid"><div class="case-process-step"><span class="case-process-step__index">01</span><site-image-window src="media/cases/type1/pouring/first-frame.png" title-key="cases.source" alt-key="cases.source"></site-image-window></div><div class="case-process-step"><span class="case-process-step__index">02</span><site-video-window src="media/cases/type1/pouring/white-model.mp4" poster="media/cases/type1/pouring/white-model-poster.png" preload="none" title-key="cases.proxy"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">03</span><site-video-window src="media/cases/type1/pouring/render.mp4" poster="media/cases/type1/pouring/render-poster.png" preload="none" title-key="cases.render"></site-video-window></div></div>
+</article>
+<article id="case-panel-meeting-room" class="case-detail" data-case-panel="meeting-room" aria-labelledby="case-title-meeting-room" hidden>
+ <div class="case-detail__heading"><div><p class="bwm-eyebrow" data-i18n="cases.type1">TYPE 1 · TRAJECTORY</p><h3 id="case-title-meeting-room"><span data-i18n="cases.task.meeting-room">Meeting room quadruped</span></h3></div><p class="case-detail__process" data-i18n="cases.process">FROM EVIDENCE TO RESULT</p></div>
+ <div class="case-process-grid"><div class="case-process-step"><span class="case-process-step__index">01</span><site-image-window src="media/cases/type1/meeting-room/first-frame.jpeg" title-key="cases.source" alt-key="cases.source"></site-image-window></div><div class="case-process-step"><span class="case-process-step__index">02</span><site-image-window src="media/cases/type1/meeting-room/first-frame-2.jpeg" title-key="cases.source" alt-key="cases.source"></site-image-window></div><div class="case-process-step"><span class="case-process-step__index">03</span><site-image-window src="media/cases/type1/meeting-room/first-frame-3.jpeg" title-key="cases.source" alt-key="cases.source"></site-image-window></div><div class="case-process-step"><span class="case-process-step__index">04</span><site-image-window src="media/cases/type1/meeting-room/first-frame-4.jpeg" title-key="cases.source" alt-key="cases.source"></site-image-window></div><div class="case-process-step"><span class="case-process-step__index">05</span><site-video-window src="media/cases/type1/meeting-room/white-model.mp4" poster="media/cases/type1/meeting-room/white-model-poster.png" preload="none" title-key="cases.proxy"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">06</span><site-video-window src="media/cases/type1/meeting-room/render.mp4" poster="media/cases/type1/meeting-room/render-poster.png" preload="none" title-key="cases.render"></site-video-window></div></div>
+</article>
+<article id="case-panel-factory" class="case-detail" data-case-panel="factory" aria-labelledby="case-title-factory" hidden>
+ <div class="case-detail__heading"><div><p class="bwm-eyebrow" data-i18n="cases.type1">TYPE 1 · TRAJECTORY</p><h3 id="case-title-factory"><span data-i18n="cases.task.factory">Complex factory quadruped</span></h3></div><p class="case-detail__process" data-i18n="cases.process">FROM EVIDENCE TO RESULT</p></div>
+ <div class="case-process-grid"><div class="case-process-step"><span class="case-process-step__index">01</span><site-image-window src="media/cases/type1/factory/first-frame.jpeg" title-key="cases.source" alt-key="cases.source"></site-image-window></div><div class="case-process-step"><span class="case-process-step__index">02</span><site-video-window src="media/cases/type1/factory/white-model.mp4" poster="media/cases/type1/factory/white-model-poster.png" preload="none" title-key="cases.proxy"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">03</span><site-video-window src="media/cases/type1/factory/render.mp4" poster="media/cases/type1/factory/render-poster.png" preload="none" title-key="cases.render"></site-video-window></div></div>
+</article>
+<article id="case-panel-office-quadruped" class="case-detail" data-case-panel="office-quadruped" aria-labelledby="case-title-office-quadruped" hidden>
+ <div class="case-detail__heading"><div><p class="bwm-eyebrow" data-i18n="cases.type1">TYPE 1 · TRAJECTORY</p><h3 id="case-title-office-quadruped"><span data-i18n="cases.task.office-quadruped">Complex office quadruped</span></h3></div><p class="case-detail__process" data-i18n="cases.process">FROM EVIDENCE TO RESULT</p></div>
+ <div class="case-process-grid"><div class="case-process-step"><span class="case-process-step__index">01</span><site-video-window src="media/cases/type1/office-quadruped/example-demo.mp4" poster="media/cases/type1/office-quadruped/example-demo-poster.png" preload="none" title-key="cases.demo"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">02</span><site-video-window src="media/cases/type1/office-quadruped/white-model.mp4" poster="media/cases/type1/office-quadruped/white-model-poster.png" preload="none" title-key="cases.proxy"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">03</span><site-video-window src="media/cases/type1/office-quadruped/render-web.mp4" poster="media/cases/type1/office-quadruped/render-poster.png" preload="none" title-key="cases.render"></site-video-window></div></div>
+</article>
+<article id="case-panel-office-humanoid" class="case-detail" data-case-panel="office-humanoid" aria-labelledby="case-title-office-humanoid" hidden>
+ <div class="case-detail__heading"><div><p class="bwm-eyebrow" data-i18n="cases.type1">TYPE 1 · TRAJECTORY</p><h3 id="case-title-office-humanoid"><span data-i18n="cases.task.office-humanoid">Complex office humanoid</span></h3></div><p class="case-detail__process" data-i18n="cases.process">FROM EVIDENCE TO RESULT</p></div>
+ <div class="case-process-grid"><div class="case-process-step"><span class="case-process-step__index">01</span><site-video-window src="media/cases/type1/office-humanoid/example-demo.mp4" poster="media/cases/type1/office-humanoid/example-demo-poster.png" preload="none" title-key="cases.demo"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">02</span><site-video-window src="media/cases/type1/office-humanoid/white-model.mp4" poster="media/cases/type1/office-humanoid/white-model-poster.png" preload="none" title-key="cases.proxy"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">03</span><site-video-window src="media/cases/type1/office-humanoid/render.mp4" poster="media/cases/type1/office-humanoid/render-poster.png" preload="none" title-key="cases.render"></site-video-window></div></div>
+</article>
+<article id="case-panel-microwave" class="case-detail" data-case-panel="microwave" aria-labelledby="case-title-microwave" hidden>
+ <div class="case-detail__heading"><div><p class="bwm-eyebrow" data-i18n="cases.type2">TYPE 2 · DEMONSTRATION</p><h3 id="case-title-microwave"><span data-i18n="cases.task.microwave">Open the microwave</span></h3></div><p class="case-detail__process" data-i18n="cases.process">FROM EVIDENCE TO RESULT</p></div>
+ <div class="case-process-grid"><div class="case-process-step"><span class="case-process-step__index">01</span><site-image-window src="media/cases/type2/microwave/first-frame.png" title-key="cases.source" alt-key="cases.source"></site-image-window></div><div class="case-process-step"><span class="case-process-step__index">02</span><site-video-window src="media/cases/type2/microwave/example-demo.mp4" poster="media/cases/type2/microwave/example-demo-poster.png" preload="none" title-key="cases.demo"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">03</span><site-image-window src="media/cases/type2/microwave/scene.png" title-key="cases.scene" alt-key="cases.scene"></site-image-window></div><div class="case-process-step"><span class="case-process-step__index">04</span><site-image-window src="media/cases/type2/microwave/robot.png" title-key="cases.robot" alt-key="cases.robot"></site-image-window></div><div class="case-process-step"><span class="case-process-step__index">05</span><site-image-window src="media/cases/type2/microwave/composed.png" title-key="cases.composed" alt-key="cases.composed"></site-image-window></div><div class="case-process-step"><span class="case-process-step__index">06</span><site-video-window src="media/cases/type2/microwave/white-model.mp4" poster="media/cases/type2/microwave/white-model-poster.png" preload="none" title-key="cases.proxy"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">07</span><site-video-window src="media/cases/type2/microwave/render-v0.mp4" poster="media/cases/type2/microwave/render-v0-poster.png" preload="none" title-key="cases.render-v0"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">08</span><site-video-window src="media/cases/type2/microwave/render-v1.mp4" poster="media/cases/type2/microwave/render-v1-poster.png" preload="none" title-key="cases.render-v1"></site-video-window></div></div>
+</article>
+<article id="case-panel-chess-collision" class="case-detail" data-case-panel="chess-collision" aria-labelledby="case-title-chess-collision" hidden>
+ <div class="case-detail__heading"><div><p class="bwm-eyebrow" data-i18n="cases.type2">TYPE 2 · DEMONSTRATION</p><h3 id="case-title-chess-collision"><span data-i18n="cases.task.chess-collision">Chess-piece collision</span></h3></div><p class="case-detail__process" data-i18n="cases.process">FROM EVIDENCE TO RESULT</p></div>
+ <div class="case-process-grid"><div class="case-process-step"><span class="case-process-step__index">01</span><site-video-window src="media/cases/type2/chess-collision/example-demo.mp4" poster="media/cases/type2/chess-collision/example-demo-poster.png" preload="none" title-key="cases.demo"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">02</span><site-video-window src="media/cases/type2/chess-collision/white-model.mp4" poster="media/cases/type2/chess-collision/white-model-poster.png" preload="none" title-key="cases.proxy"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">03</span><site-video-window src="media/cases/type2/chess-collision/render.mp4" poster="media/cases/type2/chess-collision/render-poster.png" preload="none" title-key="cases.render"></site-video-window></div></div>
+</article>
+<article id="case-panel-filtration" class="case-detail" data-case-panel="filtration" aria-labelledby="case-title-filtration" hidden>
+ <div class="case-detail__heading"><div><p class="bwm-eyebrow" data-i18n="cases.type2">TYPE 2 · DEMONSTRATION</p><h3 id="case-title-filtration"><span data-i18n="cases.task.filtration">Dual-arm filtration</span></h3></div><p class="case-detail__process" data-i18n="cases.process">FROM EVIDENCE TO RESULT</p></div>
+ <div class="case-process-grid"><div class="case-process-step"><span class="case-process-step__index">01</span><site-image-window src="media/cases/type2/filtration/first-frame.png" title-key="cases.source" alt-key="cases.source"></site-image-window></div><div class="case-process-step"><span class="case-process-step__index">02</span><site-video-window src="media/cases/type2/filtration/white-model.mp4" poster="media/cases/type2/filtration/white-model-poster.png" preload="none" title-key="cases.proxy"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">03</span><site-video-window src="media/cases/type2/filtration/render.mp4" poster="media/cases/type2/filtration/render-poster.png" preload="none" title-key="cases.render"></site-video-window></div></div>
+</article>
+<article id="case-panel-suture" class="case-detail" data-case-panel="suture" aria-labelledby="case-title-suture" hidden>
+ <div class="case-detail__heading"><div><p class="bwm-eyebrow" data-i18n="cases.type2">TYPE 2 · DEMONSTRATION</p><h3 id="case-title-suture"><span data-i18n="cases.task.suture">Explicit suture manipulation</span></h3></div><p class="case-detail__process" data-i18n="cases.process">FROM EVIDENCE TO RESULT</p></div>
+ <div class="case-process-grid"><div class="case-process-step"><span class="case-process-step__index">01</span><site-video-window src="media/cases/type2/suture/example-demo.mp4" poster="media/cases/type2/suture/example-demo-poster.png" preload="none" title-key="cases.demo"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">02</span><site-video-window src="media/cases/type2/suture/white-model.mp4" poster="media/cases/type2/suture/white-model-poster.png" preload="none" title-key="cases.proxy"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">03</span><site-video-window src="media/cases/type2/suture/render-v0.mp4" poster="media/cases/type2/suture/render-v0-poster.png" preload="none" title-key="cases.render-v0"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">04</span><site-video-window src="media/cases/type2/suture/render-v1.mp4" poster="media/cases/type2/suture/render-v1-poster.png" preload="none" title-key="cases.render-v1"></site-video-window></div></div>
+</article>
+<article id="case-panel-door-and-sit" class="case-detail" data-case-panel="door-and-sit" aria-labelledby="case-title-door-and-sit" hidden>
+ <div class="case-detail__heading"><div><p class="bwm-eyebrow" data-i18n="cases.type2">TYPE 2 · DEMONSTRATION</p><h3 id="case-title-door-and-sit"><span data-i18n="cases.task.door-and-sit">Open the door and sit down</span></h3></div><p class="case-detail__process" data-i18n="cases.process">FROM EVIDENCE TO RESULT</p></div>
+ <div class="case-process-grid"><div class="case-process-step"><span class="case-process-step__index">01</span><site-image-window src="media/cases/type2/door-and-sit/first-frame.jpeg" title-key="cases.source" alt-key="cases.source"></site-image-window></div><div class="case-process-step"><span class="case-process-step__index">02</span><site-video-window src="media/cases/type2/door-and-sit/example-demo-web.mp4" poster="media/cases/type2/door-and-sit/example-demo-poster.png" preload="none" title-key="cases.demo"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">03</span><site-video-window src="media/cases/type2/door-and-sit/white-model.mp4" poster="media/cases/type2/door-and-sit/white-model-poster.png" preload="none" title-key="cases.proxy"></site-video-window></div><div class="case-process-step"><span class="case-process-step__index">04</span><site-video-window src="media/cases/type2/door-and-sit/render.mp4" poster="media/cases/type2/door-and-sit/render-poster.png" preload="none" title-key="cases.render"></site-video-window></div></div>
+</article></div>
+</section><div class="section-divider"></div>
+
+<section id="evaluation" class="bwm-section">
+ <div class="bwm-section-intro"><p class="bwm-eyebrow">05 / EVALUATION</p><h2><span data-i18n="eval.title">How video quality is evaluated</span></h2><p><span data-i18n="eval.description">Seven objective metrics measure visual quality and motion. Three vision-language assessments check realism, coherence and task consistency.</span></p></div>
+ <div class="eval-overview">
+  <div class="eval-metric-groups">
+   <div class="eval-group" role="group" aria-labelledby="objective-metrics-title">
+    <div class="eval-section-heading"><h3 id="objective-metrics-title"><span data-i18n="eval.objective">01 / Objective metrics</span></h3><p><span data-i18n="eval.scale">Normalized to 0–100 · higher is better</span></p></div>
+    <div class="eval-metrics">
+     <article class="eval-metric"><div><span class="eval-metric__index">01</span><span class="eval-metric__weight">8.75%</span></div><h4><span data-i18n="eval.metric.sharpness">Sharpness</span></h4><p><span data-i18n="eval.metric.sharpness.body">Clarity of image details and edges.</span></p></article>
+     <article class="eval-metric"><div><span class="eval-metric__index">02</span><span class="eval-metric__weight">6.25%</span></div><h4><span data-i18n="eval.metric.exposure">Exposure</span></h4><p><span data-i18n="eval.metric.exposure.body">Penalizes excessively dark or bright pixels.</span></p></article>
+     <article class="eval-metric"><div><span class="eval-metric__index">03</span><span class="eval-metric__weight">12.50%</span></div><h4><span data-i18n="eval.metric.color">Color stability</span></h4><p><span data-i18n="eval.metric.color.body">Color consistency between adjacent frames.</span></p></article>
+     <article class="eval-metric"><div><span class="eval-metric__index">04</span><span class="eval-metric__weight">8.75%</span></div><h4><span data-i18n="eval.metric.flicker">Temporal flicker</span></h4><p><span data-i18n="eval.metric.flicker.body">Penalizes abrupt brightness and appearance changes.</span></p></article>
+     <article class="eval-metric"><div><span class="eval-metric__index">05</span><span class="eval-metric__weight">12.50%</span></div><h4><span data-i18n="eval.metric.smoothness">Motion smoothness</span></h4><p><span data-i18n="eval.metric.smoothness.body">Continuity of optical flow and motion.</span></p></article>
+     <article class="eval-metric"><div><span class="eval-metric__index">06</span><span class="eval-metric__weight">6.25%</span></div><h4><span data-i18n="eval.metric.stability">Scene stability</span></h4><p><span data-i18n="eval.metric.stability.body">Scene consistency without unwanted camera drift.</span></p></article>
+     <article class="eval-metric eval-metric--action"><div><span class="eval-metric__index">07</span><span class="eval-metric__weight">45.00%</span></div><h4><span data-i18n="eval.metric.action">Action fidelity</span></h4><p><span data-i18n="eval.metric.action.body">Compare motion direction, intensity and timing against the Proxy Video.</span></p></article>
+    </div>
+    <p class="eval-source-note"><span data-i18n="eval.weights.note">Weights follow the current implementation.</span></p>
+   </div>
+   <div class="eval-group eval-group--vlm" role="group" aria-labelledby="vision-language-metrics-title">
+    <div class="eval-section-heading"><h3 id="vision-language-metrics-title"><span data-i18n="eval.vlm">02 / Vision-language assessment</span></h3><p><span data-i18n="eval.evidence">Reference + temporal evidence + task</span></p></div>
+    <div class="eval-vlm-grid">
+     <article class="eval-vlm-card"><span>40%</span><h4><span data-i18n="eval.vlm.realism">Visual realism</span></h4><p><span data-i18n="eval.vlm.realism.body">Materials, lighting, shadows, geometry and generation artifacts.</span></p></article>
+     <article class="eval-vlm-card"><span>25%</span><h4><span data-i18n="eval.vlm.coherence">Physical &amp; temporal coherence</span></h4><p><span data-i18n="eval.vlm.coherence.body">Robot structure, contact, spatial relationships and visible continuity.</span></p></article>
+     <article class="eval-vlm-card"><span>35%</span><h4><span data-i18n="eval.vlm.semantics">Task semantic consistency</span></h4><p><span data-i18n="eval.vlm.semantics.body">Target identity, required actions, event order and final state.</span></p></article>
+    </div>
+    <p class="eval-source-note"><span data-i18n="eval.vlm.input">Judgments use the reference image, chronological video frames and task instructions.</span></p>
+   </div>
+  </div>
+  <div class="eval-summary"><div><span data-i18n="eval.combined">Combined score · default weights</span><p class="eval-formula">S = 0.80 S<sub>obj</sub> + 0.20 S<sub>VLM</sub></p></div><p><span data-i18n="eval.refine.body">An initial objective score below the threshold triggers one automatic correction; videos still below the threshold proceed to human review.</span></p></div>
+ </div>
+</section><div class="section-divider"></div>
+<section id="harness" class="bwm-section">
+ <div class="bwm-section-intro"><p class="bwm-eyebrow">06 / HARNESS &amp; ARCHITECTURE</p><h2><span data-i18n="harness.title">Every iteration leaves a useful trace.</span></h2><p><span data-i18n="harness.description">The task coordination system (left) records execution state, artifacts and stage summaries as evidence for the experience repository (right). The repository reviews reusable rules and returns relevant experience to later Building and Rendering stages, closing the loop from execution records to experience and back to generation.</span></p></div>
+ <div class="harness-diagrams">
+  <figure class="bwm-local-flow harness-control">
+   <div class="bwm-diagram-heading"><span data-i18n="harness.control.label">TASK COORDINATION &amp; RECOVERY</span></div>
+   <div class="bwm-flow-scroll" tabindex="0" aria-label="Scrollable task coordination diagram">
+    <div class="bwm-flow-grid" id="harness-control" style="--flow-columns:3" data-flow-edges="task>state;state>context;context>execute;execute>record;record>summary;record>state@left" data-flow-routes="task state context execute record summary|task state context execute record state context execute record summary">
+     <div class="bwm-local-node" data-flow-node="task" style="--flow-col:1;--flow-row:1"><span class="bwm-local-node__number">REQUEST</span><strong><span data-i18n="harness.task">Task + user feedback</span></strong></div>
+     <div class="bwm-local-node" data-flow-node="state" style="--flow-col:2;--flow-row:1"><span class="bwm-local-node__number">META-AGENT</span><strong><span data-i18n="harness.state">Coordinate task state</span></strong></div>
+     <div class="bwm-local-node" data-flow-node="context" style="--flow-col:3;--flow-row:1"><span class="bwm-local-node__number">CONTEXT</span><strong><span data-i18n="harness.context">Assemble input and experience</span></strong></div>
+     <div class="bwm-local-node" data-flow-node="execute" style="--flow-col:2;--flow-row:2"><span class="bwm-local-node__number">FOUR AGENT ROLES</span><strong><span data-i18n="harness.execute">Execute the selected agent stage</span></strong></div>
+     <div class="bwm-local-node" data-flow-node="record" style="--flow-col:2;--flow-row:3"><span class="bwm-local-node__number">RECORD / RECOVER</span><strong><span data-i18n="harness.record">Preserve artifacts, checks and logs</span></strong></div>
+     <div class="bwm-local-node" data-flow-node="summary" style="--flow-col:2;--flow-row:4"><span class="bwm-local-node__number">STAGE SUMMARY</span><strong><span data-i18n="harness.summary">Summarize stages and candidate rules</span></strong></div>
+    </div>
+   </div>
+   <figcaption><span data-i18n="harness.control.note">Task records connect input processing, construction, review and rendering. Saved state and complete intermediate outputs support recovery and execution review.</span></figcaption>
+  </figure>
+  <figure class="bwm-local-flow harness-experience">
+   <div class="bwm-diagram-heading"><span>EXPERIENCE REPOSITORY</span><span data-i18n="harness.exp.label">EXPERIENCE CONSTRUCTION &amp; EVOLUTION</span></div>
+   <div class="bwm-flow-scroll" tabindex="0" aria-label="Scrollable experience repository diagram">
+    <div class="bwm-flow-grid" id="harness-experience" style="--flow-columns:4" data-flow-edges="summaries>candidate;candidate>decide;decide>create;decide>update;decide>deactivate;decide>noop;create>store;update>store;deactivate>store;noop>store;store>scope;scope>select;select>prompt;prompt>summaries@right" data-flow-routes="summaries candidate decide create store scope select prompt|summaries candidate decide update store scope select prompt|summaries candidate decide deactivate store scope select prompt|summaries candidate decide noop store scope select prompt summaries candidate decide update store scope select prompt">
+     <div class="bwm-local-node" data-flow-node="summaries" style="--flow-col:1;--flow-row:1"><span class="bwm-local-node__number">EVIDENCE</span><strong><span data-i18n="harness.exp.summaries">Building + Rendering summaries</span></strong></div>
+     <div class="bwm-local-node" data-flow-node="candidate" style="--flow-col:2;--flow-row:1"><span class="bwm-local-node__number">LLM SUMMARIZATION</span><strong><span data-i18n="harness.exp.candidate">Extract reusable candidates</span></strong></div>
+     <div class="bwm-local-node" data-flow-node="decide" style="--flow-col:3 / span 2;--flow-row:1"><span class="bwm-local-node__number">REVIEW</span><strong><span data-i18n="harness.exp.decide">Compare scope, rules and evidence</span></strong></div>
+     <div class="bwm-local-node" data-flow-node="create" style="--flow-col:1;--flow-row:2"><span class="bwm-local-node__number">CREATE</span><strong><span data-i18n="harness.exp.create">Create an entry</span></strong></div>
+     <div class="bwm-local-node" data-flow-node="update" style="--flow-col:2;--flow-row:2"><span class="bwm-local-node__number">UPDATE</span><strong><span data-i18n="harness.exp.update">Merge into an entry</span></strong></div>
+     <div class="bwm-local-node" data-flow-node="deactivate" style="--flow-col:3;--flow-row:2"><span class="bwm-local-node__number">DEACTIVATE</span><strong><span data-i18n="harness.exp.deactivate">Deactivate an entry</span></strong></div>
+     <div class="bwm-local-node" data-flow-node="noop" style="--flow-col:4;--flow-row:2"><span class="bwm-local-node__number">NO-OP</span><strong><span data-i18n="harness.exp.noop">Leave unchanged</span></strong></div>
+     <div class="bwm-local-node" data-flow-node="store" style="--flow-col:2 / span 2;--flow-row:3"><span class="bwm-local-node__number">EXPERIENCE REPOSITORY</span><strong><span data-i18n="harness.exp.store">General + specialized experience</span></strong></div>
+     <div class="bwm-local-node" data-flow-node="scope" style="--flow-col:1;--flow-row:4"><span class="bwm-local-node__number">SCOPE FILTER</span><strong><span data-i18n="harness.exp.scope">Exclude inactive and scope-conflicting entries</span></strong></div>
+     <div class="bwm-local-node" data-flow-node="select" style="--flow-col:2;--flow-row:4"><span class="bwm-local-node__number">TASK · ROBOT · SCENE · FEEDBACK</span><strong><span data-i18n="harness.exp.select">LLM selects applicable experience</span></strong></div>
+     <div class="bwm-local-node" data-flow-node="prompt" style="--flow-col:3 / span 2;--flow-row:4"><span class="bwm-local-node__number">RETRIEVE → APPLY → RECORD</span><strong><span data-i18n="harness.exp.prompt">Guide the next Building / Rendering prompt</span></strong></div>
+    </div>
+   </div>
+   <figcaption class="harness-experience-intro"><h3><span data-i18n="harness.exp.title">Record. Review. Retrieve. Reuse.</span></h3><p><span data-i18n="harness.exp.body">Building and Rendering Agents retrieve experience before generation. Their stage documents produce new candidates; the library compares each candidate with existing rules and evidence before deciding how the repository should change.</span></p><p><span data-i18n="harness.exp.note">General rules apply across tasks; specialized rules are scoped to robots, grippers, scenes, tasks or assets. A no-op leaves the repository unchanged. Retrieved rules return to generation context, completing the experience loop.</span></p></figcaption>
+  </figure>
+ </div>
+ <div class="harness-principles">
+  <article><span>01 / COORDINATE</span><h3><span data-i18n="harness.principle0.title">Control the next step</span></h3><p><span data-i18n="harness.principle0.body">Keep the current stage, iteration and feedback aligned as agents exchange results.</span></p></article>
+  <article><span>02 / PRESERVE</span><h3><span data-i18n="harness.principle1.title">Keep the evidence</span></h3><p><span data-i18n="harness.principle1.body">Retain project previews, execution logs, checks, video versions and user decisions.</span></p></article>
+  <article><span>03 / RECOVER</span><h3><span data-i18n="harness.principle2.title">Continue from recorded state</span></h3><p><span data-i18n="harness.principle2.body">Recover the task context and intermediate results to review or continue an interrupted workflow.</span></p></article>
+ </div>
+</section><div class="section-divider"></div>
+<section id="highlights" class="functions-section">
+ <site-section-heading class="functions-heading" eyebrow="08 / HIGHLIGHTS" title="Multi-view. Multi-task. Multi-embodiment." title-key="features.title" description-key="features.description"></site-section-heading>
+ <div class="functions-grid"><site-card class="functions-card functions-card--prepare" eyebrow="01" icon="videocam" title="Multi-view" title-key="features.prepare.title"><p><span data-i18n="features.prepare.body">A shared scene, trajectory and timeline support synchronized original, following third-person and approximate first-person views. Camera changes remain editable in the scene program.</span></p><a class="feature-evidence-link" href="#pipeline"><span data-i18n="features.prepare.link">Explore the generation workflow</span> <span aria-hidden="true">↗</span></a></site-card>
+<site-card class="functions-card functions-card--review" eyebrow="02" icon="task_alt" title="Multi-task" title-key="features.review.title"><p><span data-i18n="features.review.body">Represent task objects, relationships and motion explicitly: from drawer retrieval and liquid handling to filtration, suture manipulation, locomotion and door opening. Feedback targets the relevant part of the scene program.</span></p><a class="feature-evidence-link" href="#cases"><span data-i18n="features.review.link">Explore task cases</span> <span aria-hidden="true">↗</span></a></site-card>
+<site-card class="functions-card functions-card--deliver" eyebrow="03" icon="precision_manufacturing" title="Multi-embodiment" title-key="features.deliver.title"><p><span data-i18n="features.deliver.body">Robot assets define the structure and joints. The report covers single arms, dual arms with grippers, dual arms with dexterous hands, quadrupeds and humanoids in one generation workflow.</span></p><a class="feature-evidence-link" href="#cases"><span data-i18n="features.deliver.link">Explore robot cases</span> <span aria-hidden="true">↗</span></a></site-card></div>
+</section><div class="section-divider"></div>
+
+</main><footer class="border-t border-border-dim footer-section"><div class="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-4"><span class="text-[11px] font-mono tracking-wider uppercase font-medium text-text-secondary">BWM-Forge · 2026</span></div></footer>
+
+<script>
+(function() {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // --- Theme ---
+  const themeBtn = document.getElementById('themeToggle');
+  function setTheme(theme) {
+    const isDark = theme === 'dark';
+    document.documentElement.classList.toggle('dark', isDark);
+    localStorage.setItem('bwm-forge-theme-preference', theme);
+    if (themeBtn) {
+      themeBtn.title = isDark ? 'Switch to light theme' : 'Switch to dark theme';
+      themeBtn.setAttribute('aria-label', themeBtn.title);
+      themeBtn.innerHTML = `<span class="material-symbols-outlined text-sm">${isDark ? 'light_mode' : 'dark_mode'}</span>`;
+    }
+  }
+  setTheme(localStorage.getItem('bwm-forge-theme-preference') || 'light');
+  if (themeBtn) {
+    themeBtn.addEventListener('click', () => {
+      setTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
+    });
+  }
+
+  // Keep the centered section navigation in sync with the visible section.
+  const sectionLinks = [...document.querySelectorAll('.bwm-main-nav a[href^="#"]')];
+  const sectionTargets = sectionLinks.map(link => document.getElementById(link.hash.slice(1)));
+  let navFrame = 0;
+  function updateSectionNavigation() {
+    navFrame = 0;
+    const headerHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--bwm-header-height')) || 76;
+    const readingLine = window.scrollY + headerHeight + 80;
+    let currentIndex = -1;
+    sectionTargets.forEach((section, index) => {
+      if (section && section.offsetTop <= readingLine) currentIndex = index;
+    });
+    sectionLinks.forEach((link, index) => {
+      if (index === currentIndex) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+  }
+  function scheduleSectionNavigation() {
+    if (!navFrame) navFrame = requestAnimationFrame(updateSectionNavigation);
+  }
+  window.addEventListener('scroll', scheduleSectionNavigation, { passive: true });
+  window.addEventListener('resize', scheduleSectionNavigation);
+  window.addEventListener('hashchange', scheduleSectionNavigation);
+  scheduleSectionNavigation();
+// Measured connectors keep the diagrams and their pulse on the same geometry.
+(() => {
+ const NS='http://www.w3.org/2000/svg',FLOW_SPEED=100,PULSE_LENGTH=18;
+ const graphs=[...document.querySelectorAll('[data-flow-edges]')];
+ const reduced=matchMedia('(prefers-reduced-motion:reduce)');
+ let sequence=0,queued=false,frame=0,lastTime=0;
+ const svg=(tag,attrs={})=>{const n=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v));return n;};
+ function box(host,node) {
+  const a=host.getBoundingClientRect(),b=node.getBoundingClientRect();
+  return {left:b.left-a.left,right:b.right-a.left,top:b.top-a.top,bottom:b.bottom-a.top,x:(b.left+b.right)/2-a.left,y:(b.top+b.bottom)/2-a.top};
+ }
+ function rounded(points) {
+  let d='M '+points[0].join(' ');
+  for(let i=1;i<points.length-1;i++) {
+   const [x,y]=points[i],a=points[i-1],b=points[i+1];
+   const radius=Math.min(9,Math.hypot(x-a[0],y-a[1])/2,Math.hypot(x-b[0],y-b[1])/2);
+   const ix=Math.sign(a[0]-x),iy=Math.sign(a[1]-y),ox=Math.sign(b[0]-x),oy=Math.sign(b[1]-y);
+   d+=' L '+[x+ix*radius,y+iy*radius].join(' ')+' Q '+[x,y,x+ox*radius,y+oy*radius].join(' ');
+  }
+  return d+' L '+points.at(-1).join(' ');
+ }
+ function edge(host,a,b,kind) {
+  if(kind) {
+   const right=kind.endsWith('right'),x=right?host.clientWidth-3:3;
+   const leave=a.bottom+18,approach=Math.max(3,b.top-18);
+   return rounded([[a.x,a.bottom+1],[a.x,leave],[x,leave],[x,approach],[b.x,approach],[b.x,b.top-1]]);
+  }
+  if(Math.abs(a.y-b.y)<8) return rounded([[a.x<b.x?a.right+1:a.left-1,a.y],[a.x<b.x?b.left-1:b.right+1,b.y]]);
+  const down=a.y<b.y,start=down?a.bottom+1:a.top-1,end=down?b.top-1:b.bottom+1,lane=(start+end)/2;
+  return rounded([[a.x,start],[a.x,lane],[b.x,lane],[b.x,end]]);
+ }
+ function planner(host) {
+  const edges=host.dataset.flowEdges.split(';').filter(Boolean).map(spec=>{
+   const [from,target]=spec.split('>'),[to,kind]=target.split('@');
+   return {from,to,kind,key:from+'>'+to};
+  });
+  // Enumerate complete forward routes; repeated nodes belong to optional cycles.
+  const routes=[],seen=new Set();
+  const endpoints=host.dataset.flowRoutes.split('|').map(route=>route.trim().split(/\s+/));
+  endpoints.forEach(ids=>{
+   function visit(nodes) {
+    const current=nodes.at(-1);
+    if(current===ids.at(-1)) {
+     const key=nodes.join(' ');
+     if(!seen.has(key)){seen.add(key);routes.push(nodes);}
+     return;
+    }
+    edges.filter(e=>e.from===current&&!nodes.includes(e.to)).forEach(e=>visit([...nodes,e.to]));
+   }
+   visit([ids[0]]);
+  });
+  const forward=new Set(routes.flatMap(ids=>ids.slice(1).map((to,i)=>ids[i]+'>'+to)));
+  const feedback=edges.filter(e=>['left','right'].includes(e.kind)&&!forward.has(e.key));
+  function path(from,to,exclude) {
+   const queue=[[from]],visited=new Set([from]);
+   for(let i=0;i<queue.length;i++){
+    const ids=queue[i],current=ids.at(-1);
+    if(current===to)return ids;
+    edges.filter(e=>e.from===current&&e.key!==exclude&&!visited.has(e.to)).forEach(e=>{
+     visited.add(e.to);queue.push([...ids,e.to]);
+    });
+   }
+   return null;
+  }
+  const loops=routes.map(base=>feedback.flatMap(e=>{
+   const a=base.indexOf(e.from),b=base.indexOf(e.to);
+   if(a<0&&b<0)return [];
+   const back=b>=0&&a>b?base.slice(b,a+1):path(e.to,e.from,e.key);
+   if(!back)return [];
+   return [{key:e.key,anchor:a>=0?e.from:e.to,nodes:a>=0?[e.from,...back]:[...back,e.to]}];
+  }));
+  return {
+   routes,edges,loops,
+   choose(index,random=Math.random) {
+    const base=routes[index],nodes=[],chosen=[];
+    // Decide once per feedback cycle; never recurse into an inserted loop.
+    const selected=loops[index].filter(()=>random()<.7);
+    base.forEach(id=>{
+     nodes.push(id);
+     selected.filter(loop=>loop.anchor===id).forEach(loop=>{
+      nodes.push(...loop.nodes.slice(1));chosen.push(loop.key);
+     });
+    });
+    return {nodes,loops:chosen};
+   }
+  };
+ }
+ function setPulse(host,state,preserveProgress=true) {
+  const progress=state.duration?state.elapsed/state.duration:0;
+  let length=0;
+  state.segments=state.plan.nodes.slice(1).map((to,i)=>{
+   const key=state.plan.nodes[i]+'>'+to,d=state.paths.get(key);
+   if(!d)throw new Error('Undefined flow edge: '+key);
+   state.measure.setAttribute('d',d);
+   const segment={d,start:length,length:state.measure.getTotalLength()};
+   length+=segment.length;
+   segment.end=length;
+   return segment;
+  });
+  // Only exposed connectors consume travel time; cards never hide the packet.
+  state.length=length;
+  state.duration=(length+PULSE_LENGTH)/FLOW_SPEED*1000;
+  if(preserveProgress)state.elapsed=progress*state.duration;
+  state.pulse.setAttribute('d',state.segments[0].d);
+  host.dataset.activeRoute=String(state.index);
+  host.dataset.activeFlowPath=state.plan.nodes.join(' ');
+  host.dataset.flowLoops=state.plan.loops.join(';');
+  host.dataset.flowRun=String(state.run);
+  paint(state);
+ }
+ function paint(state) {
+  const head=Math.min(state.length+PULSE_LENGTH,state.elapsed/1000*FLOW_SPEED),tail=head-PULSE_LENGTH;
+  let used=0;
+  if(!reduced.matches)state.segments.forEach((segment,index)=>{
+   const start=Math.max(0,tail-segment.start),end=Math.min(segment.length,head-segment.start);
+   if(end<=start)return;
+   let pulse=state.pulses[used++];
+   if(!pulse) {
+    pulse=svg('path',{class:'bwm-flow-trace__pulse'});
+    state.canvas.insertBefore(pulse,state.edges);state.pulses.push(pulse);
+   }
+   if(pulse._segment!==segment) {
+    pulse.setAttribute('d',segment.d);pulse._segment=segment;
+    pulse.dataset.flowSegment=String(index);
+   }
+   // A packet straddling a node keeps its tail on the incoming connector
+   // while its head emerges immediately on the outgoing one.
+   pulse.style.strokeDasharray=(end-start)+' '+(segment.length+PULSE_LENGTH);
+   pulse.style.strokeDashoffset=String(-start);
+   pulse.style.opacity='1';
+  });
+  state.pulses.slice(used).forEach(pulse=>pulse.style.opacity='0');
+ }
+ function draw(host) {
+  if(!host.clientWidth||host.closest('[hidden]'))return;
+  const points=new Map([...host.querySelectorAll(':scope > [data-flow-node]')].map(n=>[n.dataset.flowNode,box(host,n)]));
+  let state=host._flowState;
+  if(!state) {
+   const id='flow-arrow-'+(++sequence),canvas=svg('svg',{class:'bwm-flow-trace','aria-hidden':'true'}),defs=svg('defs');
+   const marker=svg('marker',{id,viewBox:'0 0 12 12',refX:10,refY:6,markerWidth:8,markerHeight:8,orient:'auto',markerUnits:'userSpaceOnUse'});
+   marker.append(svg('path',{d:'M2 2 L10 6 L2 10',fill:'none',stroke:'currentColor','stroke-width':1.8,'stroke-linecap':'round','stroke-linejoin':'round'}));
+   defs.append(marker);
+   const edges=svg('g'),pulse=svg('path',{class:'bwm-flow-trace__pulse'}),measure=svg('path',{visibility:'hidden',fill:'none',stroke:'none'});
+   canvas.append(defs,measure,pulse,edges);host.prepend(canvas);
+   const routes=planner(host);
+   state=host._flowState={canvas,edges,pulse,pulses:[pulse],measure,id,index:0,planner:routes,plan:routes.choose(0),elapsed:0,run:0,paths:new Map()};
+  }
+  const signature=JSON.stringify([host.clientWidth,host.clientHeight,[...points]]);
+  if(signature!==state.signature) {
+   state.canvas.setAttribute('viewBox','0 0 '+host.clientWidth+' '+host.clientHeight);
+   const paths=new Map(),lines=[];
+   state.planner.edges.forEach(({from,to,kind,key})=>{
+    if(!points.has(from)||!points.has(to))throw new Error('Missing flow node: '+key);
+    const d=edge(host,points.get(from),points.get(to),kind);paths.set(key,d);
+    const feedback=kind==='right'||kind==='left';
+    lines.push(svg('path',{d,class:'bwm-flow-trace__base'+(feedback?' bwm-flow-trace__return':''),'marker-end':'url(#'+state.id+')'}));
+   });
+   state.edges.replaceChildren(...lines);
+   state.paths=paths;state.signature=signature;
+   setPulse(host,state);
+  }
+ }
+ function visible(host) {
+  return !document.hidden&&!reduced.matches&&!host.closest('[hidden]')&&host.classList.contains('is-flow-visible');
+ }
+ function animate(time) {
+  frame=0;
+  const delta=lastTime?Math.min(time-lastTime,100):0;
+  lastTime=time;
+  let running=false;
+  graphs.forEach(host=>{
+   const state=host._flowState;
+   if(!state||!visible(host))return;
+   running=true;state.elapsed+=delta;
+   if(state.elapsed>=state.duration) {
+    state.elapsed-=state.duration;state.index=(state.index+1)%state.planner.routes.length;
+    state.plan=state.planner.choose(state.index);state.run++;
+    setPulse(host,state,false);
+   }
+   paint(state);
+  });
+  if(running)frame=requestAnimationFrame(animate);else lastTime=0;
+ }
+ function wake() { if(!frame&&!reduced.matches&&!document.hidden){lastTime=0;frame=requestAnimationFrame(animate);} }
+ function schedule() { if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;graphs.forEach(draw);wake();}); }
+ const tabs=[...document.querySelectorAll('[data-agent]')],panels=[...document.querySelectorAll('.bwm-agent-panel')];
+ function select(index,focus=false) {
+  tabs.forEach((tab,i)=>{tab.setAttribute('aria-selected',String(i===index));tab.tabIndex=i===index?0:-1;});
+  panels.forEach(p=>p.hidden=p.id!=='agent-panel-'+tabs[index].dataset.agent);
+  if(focus)tabs[index].focus();
+  schedule();
+ }
+ tabs.forEach((tab,i)=>{
+  tab.addEventListener('click',()=>{
+   select(i);
+   if(matchMedia('(max-width:1000px)').matches) {
+    const panel=document.getElementById('agent-panel-'+tab.dataset.agent);
+    panel.scrollIntoView({block:'start',behavior:reduced.matches?'instant':'smooth'});
+   }
+  });
+  tab.addEventListener('keydown',e=>{
+   const next={ArrowRight:(i+1)%tabs.length,ArrowDown:(i+1)%tabs.length,ArrowLeft:(i+tabs.length-1)%tabs.length,ArrowUp:(i+tabs.length-1)%tabs.length,Home:0,End:tabs.length-1}[e.key];
+   if(next!==undefined){e.preventDefault();select(next,true);}
+  });
+ });
+ const inView=new IntersectionObserver(entries=>{
+  entries.forEach(e=>e.target.classList.toggle('is-flow-visible',e.isIntersecting));wake();
+ },{threshold:.05});
+ graphs.forEach(g=>inView.observe(g));
+ const resize=new ResizeObserver(schedule);
+ graphs.forEach(g=>{resize.observe(g);if(g.closest('.bwm-agent-panel'))resize.observe(g.parentElement);});
+ new MutationObserver(schedule).observe(document.documentElement,{attributes:true,attributeFilter:['lang','class']});
+ reduced.addEventListener('change',()=>{graphs.forEach(g=>{if(g._flowState)paint(g._flowState);});wake();});
+ document.addEventListener('visibilitychange',wake);
+ window.addEventListener('resize',schedule);
+ document.fonts?.ready.then(schedule);
+ if(tabs.length)select(0);else schedule();
+})();
+
+document.addEventListener('DOMContentLoaded',()=>{
+ const section=document.getElementById('cases'),marquee=document.getElementById('caseMarquee'),track=document.getElementById('caseTrack'),toggle=document.getElementById('caseMotionToggle');
+ if(!section||!track)return;
+ const originals=[...track.querySelectorAll('.case-card')],panels=[...section.querySelectorAll('[data-case-panel]')];
+ const reduce=matchMedia('(prefers-reduced-motion: reduce)');
+ const translate=key=>i18n[document.documentElement.lang.startsWith('zh')?'zh':'en'][key]||key;
+ let current=originals[0]?.dataset.caseId;
+ originals.forEach(card=>{const copy=card.cloneNode(true);copy.dataset.caseClone='';copy.setAttribute('aria-hidden','true');copy.tabIndex=-1;track.append(copy);});
+ function measure(){const copy=track.querySelector('[data-case-clone]');if(!copy)return;const distance=copy.offsetLeft-originals[0].offsetLeft;track.style.setProperty('--case-distance',distance+'px');track.style.setProperty('--case-duration',Math.max(40,distance/48)+'s');}
+ function status(){const locked=marquee.classList.contains('is-locked');toggle.textContent=translate(locked?'cases.resume':'cases.pause');toggle.setAttribute('aria-pressed',String(locked));toggle.removeAttribute('data-i18n');}
+ function lock(value){marquee.classList.toggle('is-locked',value);status();}
+ function select(id){current=id;track.querySelectorAll('.case-card').forEach(c=>c.setAttribute('aria-pressed',String(c.dataset.caseId===id)));panels.forEach(p=>{p.hidden=p.dataset.casePanel!==id;if(p.hidden)p.querySelectorAll('video').forEach(v=>v.pause());});document.getElementById('caseSelectionStatus').textContent=translate('cases.selected')+translate('cases.task.'+id);lock(true);}
+ track.addEventListener('click',e=>{const card=e.target.closest('[data-case-id]');if(card)select(card.dataset.caseId);});
+ track.addEventListener('focusin',e=>{if(e.target.closest('[data-case-id]'))lock(true);});
+ document.addEventListener('click',e=>{if(e.target.closest('[data-case-id]')||toggle.contains(e.target))return;lock(false);if(track.contains(document.activeElement))document.activeElement.blur();});
+ toggle.addEventListener('click',()=>lock(!marquee.classList.contains('is-locked')));
+ section.addEventListener('play',e=>{if(e.target.tagName!=='VIDEO'||!e.target.controls)return;section.querySelectorAll('.case-detail video').forEach(v=>{if(v!==e.target)v.pause();});},true);
+ const previewObserver=new IntersectionObserver(entries=>entries.forEach(({target:video,isIntersecting})=>{
+  if(isIntersecting&&!reduce.matches){if(!video.getAttribute('src'))video.src=video.dataset.previewSrc;video.muted=true;video.play().catch(()=>{});}else video.pause();
+ }),{threshold:.2});
+ track.querySelectorAll('video').forEach(v=>previewObserver.observe(v));
+ const viewportObserver=new IntersectionObserver(entries=>marquee.classList.toggle('is-in-view',entries.some(e=>e.isIntersecting)),{threshold:.05});viewportObserver.observe(marquee);
+ reduce.addEventListener('change',()=>{track.querySelectorAll('video').forEach(v=>v.pause());measure();});
+ document.addEventListener('site:language',()=>{status();measure();document.getElementById('caseSelectionStatus').textContent=translate('cases.selected')+translate('cases.task.'+current);});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)track.querySelectorAll('video').forEach(v=>v.pause());});
+ window.addEventListener('resize',measure);document.fonts?.ready.then(measure);measure();status();
+});
+
+  const langBtn = document.getElementById('langToggle');
+  let currentLang = localStorage.getItem('bwm-forge-lang') === 'zh' ? 'zh' : 'en';
+
+  const i18n = {
+  "en": {
+    "component.image.empty": "Image unavailable",
+    "component.image.open": "Open original image",
+    "component.video.empty": "Video unavailable",
+    "component.pipeline.empty": "No pipeline stages yet",
+    "component.feedback.pending": "Pending review",
+    "component.feedback.accepted": "Accepted",
+    "component.feedback.revise": "Revision requested",
+    "component.feedback.paused": "Paused",
+    "component.score.unassessed": "Not evaluated",
+    "nav.pipeline": "Pipeline",
+    "nav.cases": "Cases",
+    "nav.evaluation": "Evaluation",
+    "nav.harness": "Harness",
+    "nav.highlights": "Highlights",
+    "hero.badge": "Embodied World Programming",
+    "hero.title": "Agentic World Programming for Embodied Intelligence",
+    "hero.desc": "Program geometry, motion and viewpoints. Generate high-fidelity robot videos through a collaborative agent workflow.",
+    "hero.cta0": "Explore Pipeline",
+    "hero.cta1": "View Cases",
+    "hero.report": "Technical Report",
+    "pipeline.prep.source": "Robot assets + task + input evidence",
+    "pipeline.prep.assets": "Asset validation",
+    "pipeline.prep.motion": "Motion consistency validation",
+    "pipeline.prep.visual": "First-frame / demonstration parsing",
+    "pipeline.prep.conventions": "Joint mapping, units and timing",
+    "pipeline.prep.state": "Entities, relations and cameras",
+    "pipeline.prep.handoff": "Unified modeling context",
+    "pipeline.build.robot": "Robot import",
+    "pipeline.build.plan": "Plan space, motion and cameras",
+    "pipeline.build.merge": "Merge projects; refine alignment",
+    "pipeline.build.animate": "Robot, object and camera timelines",
+    "pipeline.build.checks": "Keyframes, contact and motion continuity",
+    "pipeline.build.review": "Reviewing Agent + user feedback",
+    "pipeline.build.proxy": "Editable scene + Proxy Video",
+    "pipeline.render.proxy": "Proxy Video: structure and motion",
+    "pipeline.render.frame": "Reference image + prompt",
+    "pipeline.render.generate": "Experience-guided video generation",
+    "pipeline.render.objective": "Seven objective metrics",
+    "pipeline.render.vlm": "Visual and action assessment",
+    "pipeline.render.correction": "Optimize prompt; regenerate once",
+    "pipeline.render.combined": "Combine objective + VLM scores",
+    "pipeline.render.recheck": "Re-evaluate the corrected video",
+    "pipeline.render.manual": "Still below τ: human review",
+    "pipeline.render.user": "User confirms or requests revision",
+    "pipeline.render.final": "Final video + stage summary",
+    "pipeline.review.source": "Current project, task and feedback",
+    "pipeline.review.visual": "Keyframes + random-frame inspection",
+    "pipeline.review.numeric": "Execution logs + recorded trajectories",
+    "pipeline.review.assess": "Check layout, structure and motion",
+    "pipeline.review.repair": "Make targeted local corrections",
+    "pipeline.review.accept": "Record review and unresolved issues",
+    "pipeline.review.preview": "Render an updated preview",
+    "pipeline.review.user": "Optional user feedback",
+    "pipeline.review.next": "Advance the stage or rendering",
+    "pipeline.agent.reprocessing": "Reprocessing Agent",
+    "pipeline.agent.building": "Building Agent",
+    "pipeline.agent.reviewing": "Reviewing Agent",
+    "pipeline.agent.rendering": "Rendering Agent",
+    "pipeline.output": "High-fidelity task video",
+    "pipeline.output.note": "Editable world · review record",
+    "pipeline.title": "Four agents. One editable world.",
+    "pipeline.intro": "From diverse evidence to an executable scene and a high-fidelity video. Select an agent in the collaboration map to explore its internal workflow.",
+    "pipeline.mode0.title": "Space-Semantics-Driven",
+    "pipeline.mode0.body": "A reference image anchors the scene; robot assets and the task guide motion generation.",
+    "pipeline.mode1.title": "Motion Prior-Driven",
+    "pipeline.mode1.body": "Add Parquet or NPZ motion data to specify joint or end-effector motion and timing.",
+    "pipeline.mode2.title": "Real Demonstration-Driven",
+    "pipeline.mode2.body": "Use demonstrated actions and object-state changes to reconstruct the task for the target robot.",
+    "pipeline.overview": "MULTI-AGENT COLLABORATION",
+    "pipeline.legend": "Solid: forward · dashed: feedback",
+    "pipeline.reprocessing.title": "Turn evidence into modeling context",
+    "pipeline.reprocessing.body": "Validate assets, align motion conventions when trajectories are present, and parse visual evidence into entities, relations and cameras.",
+    "pipeline.reprocessing.note": "First-frame and demonstration routes share visual parsing. Type 1 adds motion consistency checks.",
+    "pipeline.building.title": "Construct, compose and animate",
+    "pipeline.building.body": "Scene planning and refinement lead to robot import, composition and motion validation. Scene and composition reviews feed corrections back to the relevant steps.",
+    "pipeline.building.note": "Scene refinement compares reference-camera renders with the input image. Robot import preserves the full asset; composition uses both reviewed projects. Accepted steps supply evidence for experience summaries.",
+    "pipeline.rendering.title": "Add appearance, then evaluate",
+    "pipeline.rendering.body": "The Proxy Video guides geometry, motion and timing. The reference image and prompt guide appearance. Scores and user feedback support iterative refinement.",
+    "pipeline.rendering.note": "Only the initial low-scoring candidate receives one automatic correction. A corrected candidate below τ goes to human review; user revision rounds do not trigger another automatic correction.",
+    "pipeline.reviewing.title": "Inspect evidence and repair locally",
+    "pipeline.reviewing.body": "Collect visual evidence, revisit numerical and physical evidence in execution logs, and correct localized defects. Preserve the review record and unresolved issues for user feedback.",
+    "pipeline.reviewing.note": "Review applies after scene construction, robot import and composition. Updated previews are checked again before advancing.",
+    "pipeline.overview.title": "One shared workflow.",
+    "pipeline.overview.body": "Four agent roles coordinate input processing, construction, review and rendering. Select an agent to explore its internal workflow.",
+    "pipeline.build.scene.plan": "Scene planning",
+    "pipeline.build.scene.entities": "Entity geometry refinement",
+    "pipeline.build.scene.refine": "Scene refinement",
+    "pipeline.build.scene.review": "Scene project + review",
+    "cases.title": "See the world take shape.",
+    "cases.description": "Fourteen tasks across three input modes. Choose a result to explore its available references, modeling previews, Proxy Video and render versions.",
+    "cases.hint": "Click a card to view its process and pause the gallery. Click elsewhere to resume.",
+    "cases.pause": "Pause gallery",
+    "cases.type0": "TYPE 0 · FIRST FRAME",
+    "cases.type1": "TYPE 1 · TRAJECTORY",
+    "cases.type2": "TYPE 2 · DEMONSTRATION",
+    "cases.source": "Reference first frame",
+    "cases.demo": "Reference demonstration",
+    "cases.scene": "Scene construction",
+    "cases.robot": "Robot import",
+    "cases.composed": "Composed preview",
+    "cases.proxy": "Proxy Video",
+    "cases.render": "Rendered result",
+    "cases.render-v0": "Render v0",
+    "cases.render-v1": "Render v1",
+    "cases.resume": "Resume gallery",
+    "cases.process": "FROM EVIDENCE TO RESULT",
+    "cases.selected": "Selected case: ",
+    "cases.gallery": "Case gallery",
+    "eval.title": "How video quality is evaluated",
+    "eval.description": "Seven objective metrics measure visual quality and motion. Three vision-language assessments check realism, coherence and task consistency.",
+    "eval.objective": "01 / Objective metrics",
+    "eval.scale": "Normalized to 0–100 · higher is better",
+    "eval.metric.sharpness": "Sharpness",
+    "eval.metric.sharpness.body": "Clarity of image details and edges.",
+    "eval.metric.exposure": "Exposure",
+    "eval.metric.exposure.body": "Penalizes excessively dark or bright pixels.",
+    "eval.metric.color": "Color stability",
+    "eval.metric.color.body": "Color consistency between adjacent frames.",
+    "eval.metric.flicker": "Temporal flicker",
+    "eval.metric.flicker.body": "Penalizes abrupt brightness and appearance changes.",
+    "eval.metric.smoothness": "Motion smoothness",
+    "eval.metric.smoothness.body": "Continuity of optical flow and motion.",
+    "eval.metric.stability": "Scene stability",
+    "eval.metric.stability.body": "Scene consistency without unwanted camera drift.",
+    "eval.metric.action": "Action fidelity",
+    "eval.metric.action.body": "Compare motion direction, intensity and timing against the Proxy Video.",
+    "eval.weights.note": "Weights follow the current implementation.",
+    "eval.vlm": "02 / Vision-language assessment",
+    "eval.evidence": "Reference + temporal evidence + task",
+    "eval.vlm.realism": "Visual realism",
+    "eval.vlm.realism.body": "Materials, lighting, shadows, geometry and generation artifacts.",
+    "eval.vlm.coherence": "Physical & temporal coherence",
+    "eval.vlm.coherence.body": "Robot structure, contact, spatial relationships and visible continuity.",
+    "eval.vlm.semantics": "Task semantic consistency",
+    "eval.vlm.semantics.body": "Target identity, required actions, event order and final state.",
+    "eval.vlm.input": "Judgments use the reference image, chronological video frames and task instructions.",
+    "eval.combined": "Combined score · default weights",
+    "eval.refine.body": "An initial objective score below the threshold triggers one automatic correction; videos still below the threshold proceed to human review.",
+    "harness.task": "Task + user feedback",
+    "harness.state": "Coordinate task state",
+    "harness.context": "Assemble input and experience",
+    "harness.execute": "Execute the selected agent stage",
+    "harness.record": "Preserve artifacts, checks and logs",
+    "harness.summary": "Summarize stages and candidate rules",
+    "harness.exp.summaries": "Building + Rendering summaries",
+    "harness.exp.candidate": "Extract reusable candidates",
+    "harness.exp.decide": "Compare scope, rules and evidence",
+    "harness.exp.create": "Create an entry",
+    "harness.exp.update": "Merge into an entry",
+    "harness.exp.deactivate": "Deactivate an entry",
+    "harness.exp.noop": "Leave unchanged",
+    "harness.exp.store": "General + specialized experience",
+    "harness.exp.scope": "Exclude inactive and scope-conflicting entries",
+    "harness.exp.select": "LLM selects applicable experience",
+    "harness.exp.prompt": "Guide the next Building / Rendering prompt",
+    "harness.title": "Every iteration leaves a useful trace.",
+    "harness.description": "The task coordination system (left) records execution state, artifacts and stage summaries as evidence for the experience repository (right). The repository reviews reusable rules and returns relevant experience to later Building and Rendering stages, closing the loop from execution records to experience and back to generation.",
+    "harness.control.label": "TASK COORDINATION & RECOVERY",
+    "harness.control.note": "Task records connect input processing, construction, review and rendering. Saved state and complete intermediate outputs support recovery and execution review.",
+    "harness.principle0.title": "Control the next step",
+    "harness.principle0.body": "Keep the current stage, iteration and feedback aligned as agents exchange results.",
+    "harness.principle1.title": "Keep the evidence",
+    "harness.principle1.body": "Retain project previews, execution logs, checks, video versions and user decisions.",
+    "harness.principle2.title": "Continue from recorded state",
+    "harness.principle2.body": "Recover the task context and intermediate results to review or continue an interrupted workflow.",
+    "harness.exp.title": "Record. Review. Retrieve. Reuse.",
+    "harness.exp.body": "Building and Rendering Agents retrieve experience before generation. Their stage documents produce new candidates; the library compares each candidate with existing rules and evidence before deciding how the repository should change.",
+    "harness.exp.label": "EXPERIENCE CONSTRUCTION & EVOLUTION",
+    "harness.exp.note": "General rules apply across tasks; specialized rules are scoped to robots, grippers, scenes, tasks or assets. A no-op leaves the repository unchanged. Retrieved rules return to generation context, completing the experience loop.",
+    "features.prepare.body": "A shared scene, trajectory and timeline support synchronized original, following third-person and approximate first-person views. Camera changes remain editable in the scene program.",
+    "features.prepare.link": "Explore the generation workflow",
+    "features.review.body": "Represent task objects, relationships and motion explicitly: from drawer retrieval and liquid handling to filtration, suture manipulation, locomotion and door opening. Feedback targets the relevant part of the scene program.",
+    "features.review.link": "Explore task cases",
+    "features.deliver.body": "Robot assets define the structure and joints. The report covers single arms, dual arms with grippers, dual arms with dexterous hands, quadrupeds and humanoids in one generation workflow.",
+    "features.deliver.link": "Explore robot cases",
+    "features.title": "Multi-view. Multi-task. Multi-embodiment.",
+    "features.description": "Editable geometry, motion and cameras make variation part of the representation.",
+    "features.prepare.title": "Multi-view",
+    "features.review.title": "Multi-task",
+    "features.deliver.title": "Multi-embodiment",
+    "cases.task.chemistry": "Chemistry experiment",
+    "cases.task.kitchen-drawer": "Kitchen drawer retrieval",
+    "cases.task.kitchen-pickup": "Kitchen object pickup",
+    "cases.task.desk-drawer": "Desk drawer retrieval",
+    "cases.task.pouring": "Liquid pouring",
+    "cases.task.meeting-room": "Meeting room quadruped",
+    "cases.task.factory": "Complex factory quadruped",
+    "cases.task.office-quadruped": "Complex office quadruped",
+    "cases.task.office-humanoid": "Complex office humanoid",
+    "cases.task.microwave": "Open the microwave",
+    "cases.task.chess-collision": "Chess-piece collision",
+    "cases.task.filtration": "Dual-arm filtration",
+    "cases.task.suture": "Explicit suture manipulation",
+    "cases.task.door-and-sit": "Open the door and sit down",
+    "pipeline.mode0.input": "First frame + task",
+    "pipeline.mode1.input": "First frame + robot trajectory",
+    "pipeline.mode2.input": "Human demonstration video",
+    "pipeline.evidence.title": "FROM EVIDENCE TO REPRESENTATION",
+    "pipeline.evidence.frame": "First frame",
+    "pipeline.evidence.scene": "Spatial scene",
+    "pipeline.evidence.prompt": "Prompt",
+    "pipeline.evidence.task": "Task instruction",
+    "pipeline.evidence.video": "Demonstration video",
+    "pipeline.evidence.demo": "Reference demonstration",
+    "pipeline.evidence.to": "maps to"
+  },
+  "zh": {
+    "component.image.empty": "图片暂不可用",
+    "component.image.open": "打开原图",
+    "component.video.empty": "视频暂不可用",
+    "component.pipeline.empty": "暂无流水线阶段",
+    "component.feedback.pending": "待审核",
+    "component.feedback.accepted": "已接受",
+    "component.feedback.revise": "需要修改",
+    "component.feedback.paused": "已暂停",
+    "component.score.unassessed": "未评估",
+    "nav.pipeline": "流程",
+    "nav.cases": "案例",
+    "nav.evaluation": "评估",
+    "nav.harness": "Harness",
+    "nav.highlights": "亮点",
+    "hero.badge": "具身世界编程",
+    "hero.title": "面向具身智能的智能体世界编程",
+    "hero.desc": "编程控制几何、运动与视角，通过多智能体协作生成高保真机器人任务视频。",
+    "hero.cta0": "探索流程",
+    "hero.cta1": "查看案例",
+    "hero.report": "技术报告",
+    "pipeline.prep.source": "机器人资产＋任务＋输入证据",
+    "pipeline.prep.assets": "资产校验",
+    "pipeline.prep.motion": "动作一致性校验",
+    "pipeline.prep.visual": "首帧／演示解析",
+    "pipeline.prep.conventions": "关节映射、单位与时序",
+    "pipeline.prep.state": "实体、关系与相机",
+    "pipeline.prep.handoff": "统一建模上下文",
+    "pipeline.build.robot": "机器人导入",
+    "pipeline.build.plan": "规划空间、运动与相机",
+    "pipeline.build.merge": "合并工程，细化几何配准",
+    "pipeline.build.animate": "机器人、物体与相机时间线",
+    "pipeline.build.checks": "关键帧、接触与运动连续性",
+    "pipeline.build.review": "Reviewing Agent＋用户反馈",
+    "pipeline.build.proxy": "可编辑场景＋Proxy Video",
+    "pipeline.render.proxy": "Proxy Video：结构与运动",
+    "pipeline.render.frame": "参考图＋提示词",
+    "pipeline.render.generate": "经验辅助的视频生成",
+    "pipeline.render.objective": "七项客观指标",
+    "pipeline.render.vlm": "视觉与动作评价",
+    "pipeline.render.correction": "优化提示词，重新生成一次",
+    "pipeline.render.combined": "融合客观分与视觉分",
+    "pipeline.render.recheck": "重新评估修正版",
+    "pipeline.render.manual": "仍低于 τ：转人工审核",
+    "pipeline.render.user": "用户确认或提出修改",
+    "pipeline.render.final": "最终视频＋阶段总结",
+    "pipeline.review.source": "当前工程、任务与反馈",
+    "pipeline.review.visual": "关键帧＋随机帧检查",
+    "pipeline.review.numeric": "执行日志＋已记录轨迹",
+    "pipeline.review.assess": "检查布局、结构与运动",
+    "pipeline.review.repair": "进行有针对性的局部修正",
+    "pipeline.review.accept": "记录审核结论与未决问题",
+    "pipeline.review.preview": "渲染更新后的预览",
+    "pipeline.review.user": "可选的用户反馈",
+    "pipeline.review.next": "进入下一阶段或视频生成",
+    "pipeline.agent.reprocessing": "Reprocessing Agent",
+    "pipeline.agent.building": "Building Agent",
+    "pipeline.agent.reviewing": "Reviewing Agent",
+    "pipeline.agent.rendering": "Rendering Agent",
+    "pipeline.output": "高保真任务视频",
+    "pipeline.output.note": "可编辑世界 · 审核记录",
+    "pipeline.title": "四类智能体，共建可编辑世界。",
+    "pipeline.intro": "从多源证据出发，构建可执行场景与高保真视频。点击协作总图中的 Agent，查看对应的内部流程。",
+    "pipeline.mode0.title": "空间语义驱动",
+    "pipeline.mode0.body": "参考图约束场景，机器人资产与任务说明共同引导动作生成。",
+    "pipeline.mode1.title": "运动先验驱动",
+    "pipeline.mode1.body": "增加 Parquet 或 NPZ 动作数据，提供关节或末端运动与时序依据。",
+    "pipeline.mode2.title": "真实示范驱动",
+    "pipeline.mode2.body": "利用演示动作与物体状态变化，为目标机器人重建任务过程。",
+    "pipeline.overview": "多智能体协作总图",
+    "pipeline.legend": "实线：推进 · 虚线：反馈",
+    "pipeline.reprocessing.title": "将证据整理为建模上下文",
+    "pipeline.reprocessing.body": "校验资产；存在轨迹时对齐动作约定；将视觉证据解析为实体、关系与相机信息。",
+    "pipeline.reprocessing.note": "首帧与演示输入共用视觉解析；Type 1 额外进行动作一致性检查。",
+    "pipeline.building.title": "构建、合成并生成动画",
+    "pipeline.building.body": "从场景规划与细化出发，依次完成机器人导入、工程合成、动画建模与运动验证；场景审核和合成审核分别反馈到对应步骤。",
+    "pipeline.building.note": "场景细化通过参考相机渲染与输入图像进行对比。机器人导入保留完整资产；合成阶段使用审核后的场景与机器人工程。通过审核的步骤记录为经验总结提供证据。",
+    "pipeline.rendering.title": "生成外观，再进行评估",
+    "pipeline.rendering.body": "Proxy Video 提供几何、运动与时序依据；参考图与提示词引导外观，评分与用户反馈支持迭代改进。",
+    "pipeline.rendering.note": "仅初始低分候选触发一次自动修正。修正后仍低于 τ 则转人工审核；用户修改轮次不再次触发自动修正。",
+    "pipeline.reviewing.title": "检查证据，进行局部修正",
+    "pipeline.reviewing.body": "收集视觉证据，复核执行日志中的数值与物理依据，修正明确的局部缺陷，并保留审核记录与未决问题供用户反馈。",
+    "pipeline.reviewing.note": "场景构建、机器人导入与合成后均进行审核，更新后的预览须再次检查后才能继续。",
+    "pipeline.overview.title": "协同推进生成流程",
+    "pipeline.overview.body": "四类 Agent 协同完成输入整理、建模、审核与渲染，并通过中间产物与反馈衔接各阶段。点击 Agent 查看内部流程。",
+    "pipeline.build.scene.plan": "场景规划",
+    "pipeline.build.scene.entities": "实体几何细化",
+    "pipeline.build.scene.refine": "场景细化",
+    "pipeline.build.scene.review": "场景工程与阶段审核",
+    "cases.title": "看见世界逐步成形。",
+    "cases.description": "三类输入，十四个任务。选择一个成果，依次查看已有的参考素材、建模预览、Proxy Video 和渲染版本。",
+    "cases.hint": "点击卡片查看完整流程并暂停滚动；点击其他位置继续滚动。",
+    "cases.pause": "暂停滚动",
+    "cases.type0": "TYPE 0 · 首帧",
+    "cases.type1": "TYPE 1 · 轨迹",
+    "cases.type2": "TYPE 2 · 演示",
+    "cases.source": "参考首帧",
+    "cases.demo": "参考演示",
+    "cases.scene": "场景构建",
+    "cases.robot": "机器人导入",
+    "cases.composed": "合成预览",
+    "cases.proxy": "Proxy Video",
+    "cases.render": "渲染结果",
+    "cases.render-v0": "渲染 v0",
+    "cases.render-v1": "渲染 v1",
+    "cases.resume": "继续滚动",
+    "cases.process": "从输入证据到最终成果",
+    "cases.selected": "当前案例：",
+    "cases.gallery": "案例滚动栏",
+    "eval.title": "视频质量如何评估",
+    "eval.description": "七项客观指标衡量画面质量与运动表现，三项视觉语言评价检查真实性、连贯性与任务一致性。",
+    "eval.objective": "01 / 客观指标",
+    "eval.scale": "归一化至 0–100 · 越高越好",
+    "eval.metric.sharpness": "清晰度",
+    "eval.metric.sharpness.body": "衡量图像细节与边缘的清晰程度。",
+    "eval.metric.exposure": "曝光",
+    "eval.metric.exposure.body": "根据过暗与过亮像素评估曝光质量。",
+    "eval.metric.color": "颜色稳定性",
+    "eval.metric.color.body": "检查相邻帧之间的颜色一致性。",
+    "eval.metric.flicker": "时序闪烁",
+    "eval.metric.flicker.body": "检测亮度与视觉外观的突变。",
+    "eval.metric.smoothness": "运动平滑性",
+    "eval.metric.smoothness.body": "衡量光流与动作的连续性。",
+    "eval.metric.stability": "场景稳定性",
+    "eval.metric.stability.body": "检查场景一致性与非预期相机漂移。",
+    "eval.metric.action": "动作保真度",
+    "eval.metric.action.body": "以 Proxy Video 为参考，对比动作方向、强度与时序。",
+    "eval.weights.note": "权重以当前实现为准。",
+    "eval.vlm": "02 / 视觉语言评价",
+    "eval.evidence": "参考图＋时序证据＋任务",
+    "eval.vlm.realism": "视觉真实性",
+    "eval.vlm.realism.body": "材质、光照、阴影、几何与生成伪影。",
+    "eval.vlm.coherence": "物理与时序连贯性",
+    "eval.vlm.coherence.body": "机器人结构、接触、空间关系与可见连续性。",
+    "eval.vlm.semantics": "任务语义一致性",
+    "eval.vlm.semantics.body": "目标身份、必要动作、事件顺序与最终状态。",
+    "eval.vlm.input": "结合参考图、按时间排列的视频帧及任务指令给出评价。",
+    "eval.combined": "综合评分 · 默认权重",
+    "eval.refine.body": "初始客观分数低于阈值时自动修正一次；修正后仍未达标的视频转交人工审核。",
+    "harness.task": "任务＋用户反馈",
+    "harness.state": "编排任务状态",
+    "harness.context": "组织输入与适用经验",
+    "harness.execute": "执行当前 Agent 阶段",
+    "harness.record": "保留产物、检查与日志",
+    "harness.summary": "汇总阶段过程与候选规则",
+    "harness.exp.summaries": "建模＋渲染阶段总结",
+    "harness.exp.candidate": "提取可复用候选规则",
+    "harness.exp.decide": "比较适用范围、规则与证据",
+    "harness.exp.create": "新增条目",
+    "harness.exp.update": "合并更新条目",
+    "harness.exp.deactivate": "停用已有条目",
+    "harness.exp.noop": "保持原状",
+    "harness.exp.store": "通用经验＋专用经验",
+    "harness.exp.scope": "排除停用条目与范围冲突条目",
+    "harness.exp.select": "LLM 选择适用经验",
+    "harness.exp.prompt": "引导下一次建模／渲染提示词",
+    "harness.title": "让每次迭代留下可用的经验。",
+    "harness.description": "左侧任务编排系统记录执行状态、产物与阶段总结，为右侧经验库提供证据；经验库审核并整理可复用规则，再将适用经验注入后续 Building 和 Rendering 阶段的上下文，形成“执行记录—经验提炼—检索应用”的闭环。",
+    "harness.control.label": "任务编排与恢复",
+    "harness.control.note": "任务记录连接输入处理、构建、审核与渲染。已保存状态与完整中间产物支持任务恢复及执行过程复核。",
+    "harness.principle0.title": "编排下一步",
+    "harness.principle0.body": "在 Agent 交接成果时，同步当前阶段、迭代与反馈。",
+    "harness.principle1.title": "保留执行证据",
+    "harness.principle1.body": "保留工程预览、执行日志、检查、视频版本与用户决策。",
+    "harness.principle2.title": "从记录状态继续",
+    "harness.principle2.body": "恢复任务上下文与中间成果，复核或继续中断的流程。",
+    "harness.exp.title": "记录、审核、检索、复用。",
+    "harness.exp.body": "Building 与 Rendering Agent 在生成前检索经验；阶段文档产生新的候选规则，经验库结合现有条目与证据进行比较，再决定如何更新。",
+    "harness.exp.label": "经验构建与演化",
+    "harness.exp.note": "通用规则跨任务适用；专用规则限定机器人、夹爪、场景、任务或资产范围。No-op 不改变经验库；检索规则回到生成上下文，形成经验闭环。",
+    "features.prepare.body": "共用场景、轨迹与时间线，生成原始、跟随式第三人称和近似第一人称同步视角；相机变化可在场景程序中直接编辑。",
+    "features.prepare.link": "查看生成流程",
+    "features.review.body": "显式表达任务物体、关系与运动，覆盖抽屉取物、液体操作、过滤、缝合线操控、行走与开门；反馈可定位到场景程序中的相应部分。",
+    "features.review.link": "查看任务案例",
+    "features.deliver.body": "通过机器人资产定义结构与关节，在统一生成流程中覆盖单臂、双臂夹爪、双臂灵巧手、四足机器人与人形机器人五类本体。",
+    "features.deliver.link": "查看机器人案例",
+    "features.title": "多视角、多任务、多本体。",
+    "features.description": "将几何、运动和相机保留在可编辑表示中，让变化成为生成过程的一部分。",
+    "features.prepare.title": "多视角",
+    "features.review.title": "多任务",
+    "features.deliver.title": "多本体",
+    "cases.task.chemistry": "化学实验",
+    "cases.task.kitchen-drawer": "厨房抽屉取物",
+    "cases.task.kitchen-pickup": "厨房拾取",
+    "cases.task.desk-drawer": "办公桌抽屉取物",
+    "cases.task.pouring": "液体倾倒",
+    "cases.task.meeting-room": "会议室场景",
+    "cases.task.factory": "复杂工厂场景",
+    "cases.task.office-quadruped": "复杂办公室场景1",
+    "cases.task.office-humanoid": "复杂办公室场景2",
+    "cases.task.microwave": "开微波炉",
+    "cases.task.chess-collision": "棋子碰撞",
+    "cases.task.filtration": "过滤实验",
+    "cases.task.suture": "显式缝合线操控",
+    "cases.task.door-and-sit": "推门而入坐下",
+    "pipeline.mode0.input": "首帧＋任务描述",
+    "pipeline.mode1.input": "首帧＋机器人轨迹",
+    "pipeline.mode2.input": "人类演示视频",
+    "pipeline.evidence.title": "从输入证据到结构化表达",
+    "pipeline.evidence.frame": "首帧",
+    "pipeline.evidence.scene": "空间场景",
+    "pipeline.evidence.prompt": "提示词",
+    "pipeline.evidence.task": "任务指令",
+    "pipeline.evidence.video": "示范视频",
+    "pipeline.evidence.demo": "参考示范",
+    "pipeline.evidence.to": "映射为"
+  }
+};
+// Shared light-DOM components: content remains themeable by shared CSS/Tailwind.
+// Loaded once by build.py; all workspaces can use the <site-*> tags directly.
+(function registerSiteComponents() {
+  if (!window.customElements) return;
+
+  function node(tag, className, value, key) {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    if (value != null) element.textContent = value;
+    if (key) element.setAttribute('data-i18n', key);
+    return element;
+  }
+
+  function addTitle(container, host, className = 'site-media__header') {
+    const title = host.getAttribute('title');
+    const key = host.getAttribute('title-key');
+    if (title || key) container.appendChild(node('div', className, title || '', key));
+  }
+
+  function addCaption(container, host) {
+    const caption = host.getAttribute('caption');
+    const key = host.getAttribute('caption-key');
+    if (caption || key) container.appendChild(node('figcaption', 'site-media__footer', caption || '', key));
+  }
+
+  function emptyMessage(key, className = 'site-media__empty') {
+    return node('p', className, '', key);
+  }
+
+  function imageFrame(src, alt, altKey, label, labelKey) {
+    const item = node('div', 'site-media__pair-item');
+    if (label || labelKey) item.appendChild(node('div', 'site-media__pair-label', label || '', labelKey));
+    const frame = node('div', 'site-media__frame');
+    if (src) {
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = alt || '';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      if (altKey) img.setAttribute('data-i18n-alt', altKey);
+      img.addEventListener('error', () => frame.replaceChildren(emptyMessage('component.image.empty')));
+      frame.appendChild(img);
+    } else {
+      frame.appendChild(emptyMessage('component.image.empty'));
+    }
+    item.appendChild(frame);
+    return item;
+  }
+
+  class SiteImageWindow extends HTMLElement {
+    connectedCallback() {
+      if (this._ready) return;
+      this._ready = true;
+      const figure = node('figure', 'site-media site-media--image');
+      addTitle(figure, this);
+      const src = this.getAttribute('src');
+      const compareSrc = this.getAttribute('compare-src');
+      const pair = node('div', compareSrc ? 'site-media__pair' : 'site-media__single');
+      pair.appendChild(imageFrame(
+        src,
+        this.getAttribute('alt'),
+        this.getAttribute('alt-key'),
+        this.getAttribute('label'),
+        this.getAttribute('label-key')
+      ));
+      if (compareSrc) pair.appendChild(imageFrame(
+        compareSrc,
+        this.getAttribute('compare-alt'),
+        this.getAttribute('compare-alt-key'),
+        this.getAttribute('compare-label'),
+        this.getAttribute('compare-label-key')
+      ));
+      figure.appendChild(pair);
+      if (src && this.hasAttribute('open-original')) {
+        const footer = node('div', 'site-media__footer');
+        const link = node('a', 'site-media__open', '', 'component.image.open');
+        link.href = src;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        footer.appendChild(link);
+        figure.appendChild(footer);
+      }
+      addCaption(figure, this);
+      this.replaceChildren(figure);
+    }
+  }
+
+  class SiteVideoWindow extends HTMLElement {
+    connectedCallback() {
+      if (this._ready) return;
+      this._ready = true;
+      const figure = node('figure', 'site-media site-media--video');
+      addTitle(figure, this);
+      const frame = node('div', 'site-media__frame');
+      const src = this.getAttribute('src');
+      if (src) {
+        const video = document.createElement('video');
+        video.src = src;
+        video.controls = true;
+        video.playsInline = true;
+        video.preload = this.getAttribute('preload') === 'none' ? 'none' : 'metadata';
+        video.setAttribute('aria-label', this.getAttribute('title') || 'Video');
+        if (this.hasAttribute('title-key')) video.setAttribute('data-i18n-aria', this.getAttribute('title-key'));
+        if (this.hasAttribute('poster')) video.poster = this.getAttribute('poster');
+        video.addEventListener('error', () => frame.replaceChildren(emptyMessage('component.video.empty')));
+        frame.appendChild(video);
+      } else {
+        frame.appendChild(emptyMessage('component.video.empty'));
+      }
+      figure.appendChild(frame);
+      addCaption(figure, this);
+      this.replaceChildren(figure);
+    }
+  }
+
+  class SiteTextWindow extends HTMLElement {
+    connectedCallback() {
+      if (this._ready) return;
+      this._ready = true;
+      const figure = node('figure', 'site-media site-media--text');
+      addTitle(figure, this);
+      const body = node('div', 'site-media__text');
+      const value = this.getAttribute('text');
+      const key = this.getAttribute('text-key');
+      if (value || key) body.appendChild(node('p', '', value || '', key));
+      while (this.firstChild) body.appendChild(this.firstChild);
+      figure.appendChild(body);
+      addCaption(figure, this);
+      this.appendChild(figure);
+    }
+  }
+
+  class SiteCard extends HTMLElement {
+    connectedCallback() {
+      if (this._ready) return;
+      this._ready = true;
+      const content = document.createDocumentFragment();
+      while (this.firstChild) content.appendChild(this.firstChild);
+      const card = node('article', 'site-card');
+      const eyebrow = this.getAttribute('eyebrow');
+      const eyebrowKey = this.getAttribute('eyebrow-key');
+      if (eyebrow || eyebrowKey) card.appendChild(node('p', 'site-card__eyebrow', eyebrow || '', eyebrowKey));
+      const title = this.getAttribute('title');
+      const titleKey = this.getAttribute('title-key');
+      const icon = this.getAttribute('icon');
+      if (title || titleKey || icon) {
+        const header = node('div', 'site-card__header');
+        if (icon) header.appendChild(node('span', 'site-card__icon material-symbols-outlined', icon));
+        if (title || titleKey) header.appendChild(node('h3', 'site-card__title', title || '', titleKey));
+        card.appendChild(header);
+      }
+      const body = node('div', 'site-card__body');
+      body.appendChild(content);
+      card.appendChild(body);
+      this.appendChild(card);
+    }
+  }
+
+  class SiteMetric extends HTMLElement {
+    connectedCallback() {
+      if (this._ready) return;
+      this._ready = true;
+      const card = node('div', 'site-metric');
+      card.appendChild(node('strong', 'site-metric__value', this.getAttribute('value') || '—'));
+      card.appendChild(node('span', 'site-metric__label', this.getAttribute('label') || '', this.getAttribute('label-key')));
+      this.replaceChildren(card);
+    }
+  }
+
+  class SiteSectionHeading extends HTMLElement {
+    connectedCallback() {
+      if (this._ready) return;
+      this._ready = true;
+      const heading = node('div', 'site-heading');
+      const eyebrow = this.getAttribute('eyebrow');
+      const eyebrowKey = this.getAttribute('eyebrow-key');
+      if (eyebrow || eyebrowKey) heading.appendChild(node('p', 'site-heading__eyebrow', eyebrow || '', eyebrowKey));
+      heading.appendChild(node('h2', 'site-heading__title', this.getAttribute('title') || '', this.getAttribute('title-key')));
+      const description = this.getAttribute('description');
+      const descriptionKey = this.getAttribute('description-key');
+      if (description || descriptionKey) heading.appendChild(node('p', 'site-heading__description', description || '', descriptionKey));
+      this.replaceChildren(heading);
+    }
+  }
+
+  let pipelineCount = 0;
+  class SitePipeline extends HTMLElement {
+    connectedCallback() {
+      if (this._ready) return;
+      this._ready = true;
+      const steps = Array.from(this.children).filter(child => child.tagName === 'SITE-STEP');
+      if (!steps.length) {
+        this.appendChild(emptyMessage('component.pipeline.empty', 'site-pipeline__empty'));
+        return;
+      }
+      const shell = node('div', 'site-pipeline');
+      const list = node('ol', 'site-pipeline__steps');
+      list.setAttribute('aria-label', this.getAttribute('aria-label') || 'Pipeline stages');
+      const panels = node('div', 'site-pipeline__panels');
+      const buttons = [];
+      const contents = [];
+      const id = ++pipelineCount;
+      let initial = 0;
+      steps.forEach((step, index) => {
+        if (step.hasAttribute('selected')) initial = index;
+        const item = node('li', 'site-pipeline__step');
+        const button = node('button', 'site-pipeline__button');
+        button.type = 'button';
+        button.setAttribute('aria-controls', `site-pipeline-${id}-panel-${index}`);
+        button.appendChild(node('span', 'site-pipeline__label', step.getAttribute('title') || `Stage ${index + 1}`, step.getAttribute('title-key')));
+        const feedback = step.getAttribute('feedback');
+        const feedbackKey = step.getAttribute('feedback-key');
+        if (feedback || feedbackKey) button.appendChild(node('small', 'site-pipeline__badge', feedback || '', feedbackKey));
+        item.appendChild(button);
+        list.appendChild(item);
+        const panel = node('section', 'site-pipeline__panel');
+        panel.id = `site-pipeline-${id}-panel-${index}`;
+        panel.appendChild(node('h3', 'site-pipeline__title', step.getAttribute('title') || `Stage ${index + 1}`, step.getAttribute('title-key')));
+        const description = step.getAttribute('description');
+        const descriptionKey = step.getAttribute('description-key');
+        if (description || descriptionKey) panel.appendChild(node('p', 'site-pipeline__description', description || '', descriptionKey));
+        const content = node('div', 'site-pipeline__content');
+        while (step.firstChild) content.appendChild(step.firstChild);
+        panel.appendChild(content);
+        panels.appendChild(panel);
+        buttons.push(button);
+        contents.push(panel);
+        button.addEventListener('click', () => {
+          select(index);
+          this.dispatchEvent(new CustomEvent('site-change', { bubbles: true, detail: { index, label: button.textContent.trim() } }));
+        });
+      });
+      function select(active) {
+        buttons.forEach((button, index) => {
+          const selected = index === active;
+          button.setAttribute('aria-expanded', String(selected));
+          button.parentElement.classList.toggle('is-active', selected);
+          contents[index].hidden = !selected;
+        });
+      }
+      shell.appendChild(list);
+      shell.appendChild(panels);
+      this.replaceChildren(shell);
+      select(initial);
+    }
+  }
+
+  class SiteTerminal extends HTMLElement {
+    connectedCallback() {
+      if (this._ready) return;
+      this._ready = true;
+      const content = document.createDocumentFragment();
+      while (this.firstChild) content.appendChild(this.firstChild);
+      const terminal = node('div', 'site-terminal');
+      const bar = node('div', 'site-terminal__bar');
+      for (const color of ['red', 'amber', 'green']) bar.appendChild(node('span', `site-terminal__dot site-terminal__dot--${color}`));
+      bar.appendChild(node('span', 'site-terminal__name', this.getAttribute('name') || 'terminal'));
+      terminal.appendChild(bar);
+      const screen = node('div', 'site-terminal__screen');
+      screen.appendChild(content);
+      terminal.appendChild(screen);
+      this.appendChild(terminal);
+      const lines = screen.querySelectorAll('[data-delay]');
+      const show = () => lines.forEach(line => setTimeout(() => line.classList.add('typed'), Number(line.getAttribute('data-delay')) || 0));
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(entries => {
+          if (entries.some(entry => entry.isIntersecting)) { show(); observer.disconnect(); }
+        }, { threshold: 0.3 });
+        observer.observe(this);
+      } else show();
+    }
+  }
+
+  class SiteSwitcher extends HTMLElement {
+    connectedCallback() {
+      if (this._ready) return;
+      this._ready = true;
+      const options = Array.from(this.children).filter(child => child.tagName === 'SITE-OPTION');
+      if (!options.length) return;
+      const shell = node('div', 'site-switcher');
+      const bar = node('div', 'site-switcher__bar');
+      const panels = node('div', 'site-switcher__panels');
+      const buttons = [];
+      const views = [];
+      const id = ++pipelineCount;
+      let initial = 0;
+      options.forEach((option, index) => {
+        if (option.hasAttribute('selected')) initial = index;
+        const button = node('button', 'site-switcher__button', option.getAttribute('label') || `Item ${index + 1}`, option.getAttribute('label-key'));
+        button.type = 'button';
+        button.setAttribute('aria-controls', `site-switcher-${id}-panel-${index}`);
+        bar.appendChild(button);
+        const panel = node('div', 'site-switcher__panel');
+        panel.id = `site-switcher-${id}-panel-${index}`;
+        while (option.firstChild) panel.appendChild(option.firstChild);
+        panels.appendChild(panel);
+        buttons.push(button);
+        views.push(panel);
+        button.addEventListener('click', () => {
+          select(index);
+          this.dispatchEvent(new CustomEvent('site-change', { bubbles: true, detail: { index, label: button.textContent.trim() } }));
+        });
+      });
+      function select(active) {
+        buttons.forEach((button, index) => {
+          const selected = index === active;
+          button.classList.toggle('is-active', selected);
+          button.setAttribute('aria-expanded', String(selected));
+          views[index].hidden = !selected;
+        });
+      }
+      shell.appendChild(bar);
+      shell.appendChild(panels);
+      this.replaceChildren(shell);
+      select(initial);
+    }
+  }
+
+  class SiteFeedbackGate extends HTMLElement {
+    connectedCallback() {
+      if (this._ready) return;
+      this._ready = true;
+      const state = this.getAttribute('state') || 'pending';
+      const allowed = ['pending', 'accepted', 'revise', 'paused'];
+      const safeState = allowed.includes(state) ? state : 'pending';
+      const card = node('div', `site-feedback site-feedback--${safeState}`);
+      card.appendChild(node('strong', 'site-feedback__state', '', `component.feedback.${safeState}`));
+      const text = this.getAttribute('text');
+      const key = this.getAttribute('text-key');
+      if (text || key) card.appendChild(node('p', 'site-feedback__text', text || '', key));
+      this.replaceChildren(card);
+    }
+  }
+
+  class SiteScore extends HTMLElement {
+    connectedCallback() {
+      if (this._ready) return;
+      this._ready = true;
+      const card = node('div', 'site-score');
+      card.appendChild(node('span', 'site-score__label', this.getAttribute('label') || '', this.getAttribute('label-key')));
+      const raw = this.getAttribute('value');
+      const hasValue = raw !== null && raw !== '';
+      const value = hasValue ? Number(raw) : NaN;
+      const maximum = Number(this.getAttribute('max') || 100);
+      if (Number.isFinite(value) && Number.isFinite(maximum) && maximum > 0 && value >= 0 && value <= maximum) {
+        const display = node('strong', 'site-score__value', `${value} / ${maximum}`);
+        card.appendChild(display);
+        const track = node('div', 'site-score__track');
+        const fill = node('span', 'site-score__fill');
+        fill.style.width = `${value / maximum * 100}%`;
+        track.appendChild(fill);
+        card.appendChild(track);
+      } else {
+        card.appendChild(node('strong', 'site-score__unassessed', '', 'component.score.unassessed'));
+      }
+      this.replaceChildren(card);
+    }
+  }
+
+  const definitions = {
+    'site-image-window': SiteImageWindow,
+    'site-video-window': SiteVideoWindow,
+    'site-text-window': SiteTextWindow,
+    'site-card': SiteCard,
+    'site-metric': SiteMetric,
+    'site-section-heading': SiteSectionHeading,
+    'site-pipeline': SitePipeline,
+    'site-terminal': SiteTerminal,
+    'site-switcher': SiteSwitcher,
+    'site-feedback-gate': SiteFeedbackGate,
+    'site-score': SiteScore
+  };
+  Object.entries(definitions).forEach(([name, component]) => {
+    if (!customElements.get(name)) customElements.define(name, component);
+  });
+})();
+  function setLang(lang) {
+    currentLang = lang;
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (i18n[lang][key]) el.innerHTML = i18n[lang][key];
+    });
+    document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+      const key = el.getAttribute('data-i18n-alt');
+      if (i18n[lang][key]) el.alt = i18n[lang][key];
+    });
+    document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+      const key = el.getAttribute('data-i18n-aria');
+      if (i18n[lang][key]) el.setAttribute('aria-label',i18n[lang][key]);
+    });
+    langBtn.textContent = lang === 'zh' ? '中' : 'EN';
+    localStorage.setItem('bwm-forge-lang', lang);
+    document.dispatchEvent(new CustomEvent('site:language',{detail:{language:lang}}));
+  }
+  setLang(currentLang);
+  langBtn.addEventListener('click', () => setLang(currentLang === 'en' ? 'zh' : 'en'));
+})();
+</script>
+</body>
+</html>
+

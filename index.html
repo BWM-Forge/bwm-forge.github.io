@@ -926,14 +926,13 @@ section[id] { scroll-margin-top: calc(var(--bwm-header-height) + 20px); }
   margin-top: 40px;
 }
 .functions-card { min-width: 0; }
-.functions-card .site-card { display: flex; flex-direction: column; }
+.functions-card .site-card { display: flex; flex-direction: column; cursor: default; transform: none; box-shadow: none; transition: none; }
 .functions-card .site-card__icon { flex-shrink: 0; }
 .functions-card--prepare .site-card__icon { color: var(--c-accent-orange); background: var(--c-tint-orange); }
 .functions-card--deliver .site-card__icon { color: var(--c-accent-green); background: var(--c-tint-emerald); }
 .functions-card--scenario .site-card__icon { color: var(--c-accent-purple); background: var(--c-tint-purple); }
 .functions-card .site-card__body { display: flex; flex-direction: column; flex: 1; font-size: 0.8125rem; line-height: 1.7; }
-.functions-card .site-card__body > p { margin: 0 0 18px; }
-.functions-card .feature-evidence-link { margin-top: auto; min-height: 54px; flex-shrink: 0; }
+.functions-card .site-card__body > p { margin: 0; }
 .functions-card .site-card__body > p + p { margin-top: 12px; }
 @media (max-width: 1100px) {
   .functions-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -943,11 +942,8 @@ section[id] { scroll-margin-top: calc(var(--bwm-header-height) + 20px); }
   .functions-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; margin-top: 28px; }
 }
 
-.feature-evidence-link { display:inline-flex; gap:6px; align-items:center; margin-top:18px; color:var(--c-accent-blue); font-size:11px; text-decoration:none; }
-.feature-evidence-link:hover { text-decoration:underline; text-underline-offset:4px; }
-.feature-evidence-link:focus-visible { outline:2px solid var(--c-accent-cyan); outline-offset:4px; }
 /* Shared feedback for controls that navigate or select visible content. */
-:is(.bwm-agent-card,.case-card,.bwm-nav-button,.bwm-hero__cta,.bwm-hero__resource,.case-motion-button,.toggle-btn,.site-pipeline__button,.site-switcher__button,.site-section-link,.functions-card .site-card) {
+:is(.bwm-agent-card,.case-card,.bwm-nav-button,.bwm-hero__cta,.bwm-hero__resource,.case-motion-button,.toggle-btn,.site-pipeline__button,.site-switcher__button,.site-section-link) {
  --interaction-color:var(--c-accent-blue); --interaction-lift:-3px;
  cursor:pointer; touch-action:manipulation; -webkit-tap-highlight-color:var(--c-selection);
  transition:border-color .18s,background-color .18s,box-shadow .18s,transform .18s;
@@ -955,9 +951,6 @@ section[id] { scroll-margin-top: calc(var(--bwm-header-height) + 20px); }
 .bwm-agent-card[data-agent] { --interaction-color:color-mix(in srgb,var(--agent-color) 85%,var(--c-text-primary)); --interaction-lift:0px; min-height:96px; justify-content:center; }
 .case-card[data-case-id] { --interaction-lift:-6px; }
 .bwm-nav-button[href],.toggle-btn[type],.case-motion-button[type] { --interaction-lift:-2px; }
-.functions-card--prepare .site-card { --interaction-color:var(--c-accent-orange); }
-.functions-card--deliver .site-card { --interaction-color:var(--c-accent-green); }
-.functions-card--scenario .site-card { --interaction-color:var(--c-accent-purple); }
 /* Persistent selection uses a restrained colored ring without resizing cards. */
 .bwm-agent-card[aria-selected="true"],.case-card[aria-pressed="true"] {
  border-color:var(--interaction-color);
@@ -969,18 +962,13 @@ section[id] { scroll-margin-top: calc(var(--bwm-header-height) + 20px); }
 .case-card[aria-pressed="true"] strong { font-weight:700; }
 .case-card__preview-action { position:absolute; inset:0; display:grid; place-items:center; opacity:0; pointer-events:none; background:linear-gradient(transparent,rgba(8,14,24,.25)); transition:opacity .18s; }
 .case-card__preview-action > span { display:grid; place-items:center; width:48px; height:48px; border-radius:50%; border:1px solid rgba(255,255,255,.65); background:rgba(8,14,24,.72); color:white; font-size:25px; transform:translateY(6px); transition:transform .18s; }
-.functions-card .site-card { position:relative; }
-.feature-evidence-link { display:flex; justify-content:space-between; align-items:center; min-height:36px; padding:7px 10px; border:1px solid var(--c-border-accent); border-radius:7px; background:var(--c-tint-blue); font-weight:600; }
-.feature-evidence-link::after { content:''; position:absolute; inset:0; border-radius:12px; }
-.feature-evidence-link > span:last-child { transition:transform .18s; }
-.functions-card .site-card:has(.feature-evidence-link:focus-visible) { outline:3px solid var(--interaction-color); outline-offset:4px; border-color:var(--interaction-color); }
 :is(.bwm-agent-card,.case-card,.bwm-nav-button,.bwm-hero__cta,.bwm-hero__resource,.case-motion-button,.toggle-btn,.site-pipeline__button,.site-switcher__button,.site-section-link):focus-visible {
  outline:3px solid var(--interaction-color); outline-offset:4px; border-color:var(--interaction-color); box-shadow:0 0 0 6px color-mix(in srgb,var(--interaction-color) 16%,transparent);
 }
 .case-card:focus-visible .case-card__preview-action { opacity:1; }
 .case-card:focus-visible .case-card__preview-action > span { transform:translateY(0); }
 @media(hover:hover) and (pointer:fine) {
- :is(.bwm-agent-card,.case-card,.bwm-nav-button,.bwm-hero__cta,.bwm-hero__resource,.case-motion-button,.toggle-btn,.site-pipeline__button,.site-switcher__button,.site-section-link,.functions-card .site-card):hover {
+ :is(.bwm-agent-card,.case-card,.bwm-nav-button,.bwm-hero__cta,.bwm-hero__resource,.case-motion-button,.toggle-btn,.site-pipeline__button,.site-switcher__button,.site-section-link):hover {
   border-color:var(--interaction-color); background-color:color-mix(in srgb,var(--interaction-color) 10%,var(--c-bg-card)); box-shadow:0 0 0 2px color-mix(in srgb,var(--interaction-color) 65%,transparent),0 14px 28px color-mix(in srgb,var(--interaction-color) 22%,transparent); transform:translateY(var(--interaction-lift));
  }
  :is(.bwm-agent-card[data-agent],.case-card[data-case-id]):hover {
@@ -994,13 +982,11 @@ section[id] { scroll-margin-top: calc(var(--bwm-header-height) + 20px); }
  .case-card:hover .case-card__preview-action { opacity:1; }
  .case-card:hover .case-card__preview-action > span { transform:translateY(0); }
  .case-card:hover video { transform:scale(1.025); filter:brightness(1.08); }
- .functions-card .site-card:hover .feature-evidence-link { border-color:var(--interaction-color); background:color-mix(in srgb,var(--interaction-color) 15%,var(--c-bg-card)); text-decoration:none; }
- .functions-card .site-card:hover .feature-evidence-link > span:last-child { transform:translate(3px,-2px); }
 }
-:is(.bwm-agent-card,.case-card,.bwm-nav-button,.bwm-hero__cta,.case-motion-button,.toggle-btn,.functions-card .site-card):active { transform:translateY(0); box-shadow:inset 0 0 0 2px var(--interaction-color); }
+:is(.bwm-agent-card,.case-card,.bwm-nav-button,.bwm-hero__cta,.case-motion-button,.toggle-btn):active { transform:translateY(0); box-shadow:inset 0 0 0 2px var(--interaction-color); }
 @media(prefers-reduced-motion:reduce) {
- :is(.bwm-agent-card,.case-card,.bwm-nav-button,.bwm-hero__cta,.bwm-hero__resource,.case-motion-button,.toggle-btn,.site-pipeline__button,.site-switcher__button,.site-section-link,.functions-card .site-card),.case-card video,.case-card__preview-action,.case-card__preview-action > span,.feature-evidence-link > span:last-child { transition:none; }
- :is(.bwm-agent-card,.case-card,.bwm-nav-button,.bwm-hero__cta,.bwm-hero__resource,.case-motion-button,.toggle-btn,.site-pipeline__button,.site-switcher__button,.site-section-link,.functions-card .site-card):is(:hover,:focus-visible,:active),.case-card:hover video,.case-card__preview-action > span,.feature-evidence-link > span:last-child { transform:none; }
+ :is(.bwm-agent-card,.case-card,.bwm-nav-button,.bwm-hero__cta,.bwm-hero__resource,.case-motion-button,.toggle-btn,.site-pipeline__button,.site-switcher__button,.site-section-link),.case-card video,.case-card__preview-action,.case-card__preview-action > span { transition:none; }
+ :is(.bwm-agent-card,.case-card,.bwm-nav-button,.bwm-hero__cta,.bwm-hero__resource,.case-motion-button,.toggle-btn,.site-pipeline__button,.site-switcher__button,.site-section-link):is(:hover,:focus-visible,:active),.case-card:hover video,.case-card__preview-action > span { transform:none; }
 }
 </style>
 </head>
@@ -1333,10 +1319,10 @@ section[id] { scroll-margin-top: calc(var(--bwm-header-height) + 20px); }
 </section><div class="section-divider"></div>
 <section id="highlights" class="functions-section">
  <site-section-heading class="functions-heading" eyebrow="05 / HIGHLIGHTS" title="Multi-View  Multi-Task  Multi-Embodiment  Multi-Scenario" title-key="features.title" description-key="features.description"></site-section-heading>
- <div class="functions-grid"><site-card class="functions-card functions-card--prepare" eyebrow="01" icon="videocam" title="Multi-View" title-key="features.prepare.title"><p><span data-i18n="features.prepare.body">Generate synchronized original, following third-person and approximate first-person views from one scene. Edit camera paths on a shared motion timeline.</span></p><a class="feature-evidence-link" href="#pipeline"><span data-i18n="features.prepare.link">Explore the generation workflow</span> <span aria-hidden="true">↗</span></a></site-card>
-<site-card class="functions-card functions-card--review" eyebrow="02" icon="task_alt" title="Multi-Task" title-key="features.review.title"><p><span data-i18n="features.review.body">Program object relationships and motion for manipulation and locomotion tasks. Use feedback to refine the relevant part of the scene program.</span></p><a class="feature-evidence-link" href="#cases"><span data-i18n="features.review.link">Explore task cases</span> <span aria-hidden="true">↗</span></a></site-card>
-<site-card class="functions-card functions-card--deliver" eyebrow="03" icon="precision_manufacturing" title="Multi-Embodiment" title-key="features.deliver.title"><p><span data-i18n="features.deliver.body">Use one workflow across single arms, dual arms with grippers or dexterous hands, quadrupeds and humanoids.</span></p><a class="feature-evidence-link" href="#cases"><span data-i18n="features.deliver.link">Explore robot cases</span> <span aria-hidden="true">↗</span></a></site-card>
-<site-card class="functions-card functions-card--scenario" eyebrow="04" icon="landscape" title="Multi-Scenario" title-key="features.scenario.title"><p><span data-i18n="features.scenario.body">Render one Proxy Video in different scene styles. Reference images and prompts vary appearance while the proxy guides motion and timing.</span></p><a class="feature-evidence-link" href="#agent-panel-rendering" data-agent-target="rendering"><span data-i18n="features.scenario.link">Explore scene-style rendering</span> <span aria-hidden="true">↗</span></a></site-card></div>
+ <div class="functions-grid"><site-card class="functions-card functions-card--prepare" eyebrow="01" icon="videocam" title="Multi-View" title-key="features.prepare.title"><p><span data-i18n="features.prepare.body">Generate synchronized original, following third-person and approximate first-person views from one scene. Edit camera paths on a shared motion timeline.</span></p></site-card>
+<site-card class="functions-card functions-card--review" eyebrow="02" icon="task_alt" title="Multi-Task" title-key="features.review.title"><p><span data-i18n="features.review.body">Program object relationships and motion for manipulation and locomotion tasks. Use feedback to refine the relevant part of the scene program.</span></p></site-card>
+<site-card class="functions-card functions-card--deliver" eyebrow="03" icon="precision_manufacturing" title="Multi-Embodiment" title-key="features.deliver.title"><p><span data-i18n="features.deliver.body">Use one workflow across single arms, dual arms with grippers or dexterous hands, quadrupeds and humanoids.</span></p></site-card>
+<site-card class="functions-card functions-card--scenario" eyebrow="04" icon="landscape" title="Multi-Scenario" title-key="features.scenario.title"><p><span data-i18n="features.scenario.body">Render one Proxy Video in different scene styles. Reference images and prompts vary appearance while the proxy guides motion and timing.</span></p></site-card></div>
 </section><div class="section-divider"></div>
 
 </main><footer class="border-t border-border-dim footer-section"><div class="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-4"><span class="text-[11px] font-mono tracking-wider uppercase font-medium text-text-secondary">BWM-Forge · 2026</span></div></footer>
@@ -1631,17 +1617,6 @@ section[id] { scroll-margin-top: calc(var(--bwm-header-height) + 20px); }
    if(next!==undefined){e.preventDefault();select(next,true);}
   });
  });
- document.querySelectorAll('[data-agent-target]').forEach(link=>{
-  link.addEventListener('click',()=>{
-   const index=tabs.findIndex(tab=>tab.dataset.agent===link.dataset.agentTarget);
-   if(index>=0)select(index);
-  });
- });
- function selectHashAgent() {
-  const index=tabs.findIndex(tab=>location.hash==='#agent-panel-'+tab.dataset.agent);
-  if(index>=0)select(index);
- }
- window.addEventListener('hashchange',selectHashAgent);
  const inView=new IntersectionObserver(entries=>{
   entries.forEach(e=>e.target.classList.toggle('is-flow-visible',e.isIntersecting));wake();
  },{threshold:.05});
@@ -1653,7 +1628,7 @@ section[id] { scroll-margin-top: calc(var(--bwm-header-height) + 20px); }
  document.addEventListener('visibilitychange',wake);
  window.addEventListener('resize',schedule);
  document.fonts?.ready.then(schedule);
- if(tabs.length){select(0);selectHashAgent();}else schedule();
+ if(tabs.length)select(0);else schedule();
 })();
 
 document.addEventListener('DOMContentLoaded',()=>{
@@ -1859,11 +1834,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     "harness.exp.label": "EXPERIENCE CONSTRUCTION & EVOLUTION",
     "harness.exp.note": "General rules apply across tasks; specialized rules are scoped to robots, grippers, scenes, tasks or assets. A no-op leaves the repository unchanged. Retrieved rules return to generation context, completing the experience loop.",
     "features.prepare.body": "Generate synchronized original, following third-person and approximate first-person views from one scene. Edit camera paths on a shared motion timeline.",
-    "features.prepare.link": "Explore the generation workflow",
     "features.review.body": "Program object relationships and motion for manipulation and locomotion tasks. Use feedback to refine the relevant part of the scene program.",
-    "features.review.link": "Explore task cases",
     "features.deliver.body": "Use one workflow across single arms, dual arms with grippers or dexterous hands, quadrupeds and humanoids.",
-    "features.deliver.link": "Explore robot cases",
     "features.title": "Multi-View  Multi-Task  Multi-Embodiment  Multi-Scenario",
     "features.description": "Editable geometry, motion and cameras support diverse views, tasks and robots. A shared Proxy Video brings the same motion into different scene styles.",
     "features.prepare.title": "Multi-View",
@@ -1871,7 +1843,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     "features.deliver.title": "Multi-Embodiment",
     "features.scenario.title": "Multi-Scenario",
     "features.scenario.body": "Render one Proxy Video in different scene styles. Reference images and prompts vary appearance while the proxy guides motion and timing.",
-    "features.scenario.link": "Explore scene-style rendering",
     "cases.task.chemistry": "Chemistry experiment",
     "cases.task.kitchen-drawer": "Kitchen drawer retrieval",
     "cases.task.kitchen-pickup": "Kitchen object pickup",
@@ -2069,11 +2040,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     "harness.exp.label": "经验构建与演化",
     "harness.exp.note": "通用规则跨任务适用；专用规则限定机器人、夹爪、场景、任务或资产范围。No-op 不改变经验库；检索规则回到生成上下文，形成经验闭环。",
     "features.prepare.body": "共用场景、运动与时间线，生成原始、跟随式第三人称和近似第一人称同步视角；相机轨迹可编辑。",
-    "features.prepare.link": "查看生成流程",
     "features.review.body": "显式编程任务物体关系与运动，覆盖操作和移动任务；通过反馈定向细化场景程序。",
-    "features.review.link": "查看任务案例",
     "features.deliver.body": "统一支持单臂、双臂夹爪、双臂灵巧手、四足机器人与人形机器人五类本体。",
-    "features.deliver.link": "查看机器人案例",
     "features.title": "多视角、多任务、多本体、多场景。",
     "features.description": "可编辑的几何、运动与相机支持多视角、多任务和多本体；共享同一段 Proxy Video，将相同运动迁移到不同场景风格。",
     "features.prepare.title": "多视角",
@@ -2081,7 +2049,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     "features.deliver.title": "多本体",
     "features.scenario.title": "多场景",
     "features.scenario.body": "同一段 Proxy Video 可渲染为不同场景风格。参考图与提示词改变外观，Proxy Video 提供运动与时序依据。",
-    "features.scenario.link": "查看场景风格迁移渲染",
     "cases.task.chemistry": "化学实验",
     "cases.task.kitchen-drawer": "厨房抽屉取物",
     "cases.task.kitchen-pickup": "厨房拾取",

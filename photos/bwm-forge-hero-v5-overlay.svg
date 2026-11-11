@@ -27,5 +27,5 @@
     <ellipse cx="960" cy="321" rx="680" ry="112" fill="url(#title-shadow)"/>
     <g id="typography" text-anchor="middle" filter="url(#shadow)">
      <text x="960" y="321" font-family="Space Grotesk,Arial,sans-serif" font-weight="700" font-size="96" letter-spacing="4" fill="url(#title)">BWM-Forge</text>
-     <text x="960" y="370" font-family="Inter,Arial,sans-serif" font-weight="500" font-size="26" letter-spacing="1.5" fill="#f0f6ff">Multi-task.Multi-perspective.Multi-scenario.Multi-embodiment</text>
+     <text x="960" y="370" id="hero-subtitle" xml:space="preserve" style="white-space:pre" font-family="Inter,Arial,sans-serif" font-weight="500" font-size="26" letter-spacing="1.5" fill="#f0f6ff">Multi-Task  Multi-Perspective  Multi-Scenario  Multi-Embodiment</text>
     </g></svg>

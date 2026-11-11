@@ -472,9 +472,32 @@ section[id] { scroll-margin-top: calc(var(--bwm-header-height) + 20px); }
 
 .bwm-hero {
   position: relative;
-  min-height: min(710px, calc(100svh - var(--bwm-header-height)));
   overflow: hidden;
   isolation: isolate;
+}
+.bwm-hero__visual {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+.bwm-hero__visual picture { display: block; }
+.bwm-hero__visual img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 1;
+  border: 0;
+  border-radius: 0;
+  background: #040b16;
+}
+.bwm-hero__visual .bwm-hero__vector {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  background: transparent;
+  pointer-events: none;
 }
 .bwm-hero__grid {
   position: absolute;
@@ -498,9 +521,8 @@ section[id] { scroll-margin-top: calc(var(--bwm-header-height) + 20px); }
 .bwm-hero__inner {
   position: relative;
   width: min(100%, 1320px);
-  min-height: inherit;
   margin: auto;
-  padding: 66px 48px 72px;
+  padding: 48px 48px 72px;
   display: grid;
   grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
   align-items: center;
@@ -667,7 +689,7 @@ section[id] { scroll-margin-top: calc(var(--bwm-header-height) + 20px); }
   .bwm-hero__title { font-size: clamp(34px, 4.3vw, 56px); }
 }
 @media (max-width: 800px) {
-  .bwm-hero__inner { grid-template-columns: minmax(0, 1fr); gap: 10px; text-align: center; padding: 55px 24px 42px; }
+  .bwm-hero__inner { grid-template-columns: minmax(0, 1fr); gap: 10px; text-align: center; padding: 36px 24px 42px; }
   .bwm-hero__description { margin-left: auto; margin-right: auto; }
   .bwm-hero__actions, .bwm-hero__flow { justify-content: center; }
   .bwm-hero__resources { margin-inline: auto; }
@@ -972,12 +994,13 @@ section[id] { scroll-margin-top: calc(var(--bwm-header-height) + 20px); }
 <main class="bwm-page-main">
 <section id="top" class="hero-section bwm-hero">
  <div class="bwm-hero__grid" aria-hidden="true"></div><div class="bwm-hero__glow bwm-hero__glow--blue" aria-hidden="true"></div><div class="bwm-hero__glow bwm-hero__glow--orange" aria-hidden="true"></div>
+ <figure class="bwm-hero__visual"><picture><source type="image/webp" srcset="./photos/bwm-forge-hero-v5-bg-1920.webp 1920w, ./photos/bwm-forge-hero-v5-bg-3840.webp 3840w" sizes="100vw"><img src="./photos/bwm-forge-hero-v5-bg-1920.jpg" alt="BWM-Forge: Multi-task.Multi-perspective.Multi-scenario.Multi-embodiment. Robot arms, quadrupeds and humanoids across eight simulated scenes." width="3840" height="1280" loading="eager" fetchpriority="high" decoding="async"></picture><img class="bwm-hero__vector" src="./photos/bwm-forge-hero-v5-overlay.svg" alt="" aria-hidden="true" width="1920" height="640" loading="eager" fetchpriority="high" decoding="async"></figure>
  <div class="bwm-hero__inner"><div class="bwm-hero__copy">
   <div class="bwm-hero__badge"><span class="bwm-hero__badge-dot" aria-hidden="true"></span><span data-i18n="hero.badge">Embodied World Programming</span></div>
   <h1 class="bwm-hero__title"><span class="bwm-hero__title-brand">BWM-Forge:</span><span class="bwm-hero__title-sub"><span data-i18n="hero.title">Agentic World Programming for Embodied Intelligence</span></span></h1>
   <p class="bwm-hero__description"><span data-i18n="hero.desc">Program geometry, motion and viewpoints. Generate high-fidelity robot videos through a collaborative agent workflow.</span></p>
   <div class="bwm-hero__actions"><a href="#pipeline" class="bwm-hero__cta bwm-hero__cta--primary"><span class="material-symbols-outlined" aria-hidden="true">account_tree</span><span data-i18n="hero.cta0">Explore Pipeline</span></a><a href="#cases" class="bwm-hero__cta bwm-hero__cta--secondary"><span class="material-symbols-outlined" aria-hidden="true">play_circle</span><span data-i18n="hero.cta1">View Cases</span></a><a id="technical-report-link" href="https://arxiv.org/" class="bwm-hero__cta bwm-hero__cta--secondary" target="_blank" rel="noopener noreferrer"><span class="material-symbols-outlined" aria-hidden="true">description</span><span data-i18n="hero.report">Technical Report</span></a><a id="github-link" href="https://github.com/" class="bwm-hero__cta bwm-hero__cta--secondary" target="_blank" rel="noopener noreferrer"><svg class="bwm-hero__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .75a11.25 11.25 0 0 0-3.56 21.92c.56.1.77-.24.77-.54v-2.1c-3.13.68-3.79-1.33-3.79-1.33-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.69.08-.69 1.13.08 1.73 1.16 1.73 1.16 1 1.72 2.63 1.22 3.27.93.1-.73.39-1.22.71-1.5-2.5-.29-5.13-1.25-5.13-5.56 0-1.23.44-2.23 1.16-3.02-.12-.28-.5-1.43.11-2.98 0 0 .95-.3 3.1 1.15a10.8 10.8 0 0 1 5.64 0c2.15-1.46 3.1-1.15 3.1-1.15.61 1.55.23 2.7.11 2.98.72.79 1.16 1.79 1.16 3.02 0 4.32-2.64 5.27-5.15 5.55.4.35.76 1.03.76 2.09v3.1c0 .3.2.65.78.54A11.25 11.25 0 0 0 12 .75Z"/></svg><span>GitHub</span></a></div>
- </div><div class="bwm-hero__art" aria-hidden="true"><div class="bwm-hero__art-ring"></div><img src="./photos/logo.png" alt="" width="1254" height="1254" fetchpriority="high"></div></div>
+ </div><div class="bwm-hero__art" aria-hidden="true"><div class="bwm-hero__art-ring"></div><img src="./photos/logo.png" alt="" width="1254" height="1254" loading="lazy" decoding="async"></div></div>
 </section>
 
 <section id="pipeline" class="bwm-section">

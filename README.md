@@ -12,7 +12,7 @@ BWM-Forge 项目展示网站，介绍空间语义驱动、运动先验驱动与�
 BWM-Forge/
 ├── index.html       # 完整页面，包含样式、交互逻辑和中英文文案
 ├── media/cases/     # 页面实际引用的案例视频、图片和海报
-├── photos/          # 项目标志
+├── photos/          # 项目标志与首页主视觉
 ├── vendor/          # 本地样式依赖、字体与图标字体
 ├── .nojekyll        # 直接发布静态文件
 ├── .gitattributes
@@ -51,6 +51,7 @@ git push -u origin main
 
 ## 更新文案、资源与链接
 
+- **首页主视觉**：高宽比 1:3，紧贴导航栏并铺满页面宽度。`photos/bwm-forge-hero-v5-bg-*` 提供 1920/3840 像素宽的场景背景，`photos/bwm-forge-hero-v5-overlay.svg` 独立绘制文字、矢量曲面及向上下逐渐消隐的曲线。网页直接显示 SVG，因此网格在放大时仍保持清晰。第二行使用 `Multi-task.Multi-perspective.Multi-scenario.Multi-embodiment`。更换版式时同步更新背景与 SVG，保持相同的 3:1 比例和对齐。
 - **论文链接**：在 `index.html` 中查找 `id="technical-report-link"`，替换其 `href`。当前暂指向 `https://arxiv.org/`。
 - **代码链接**：查找 `id="github-link"`，替换其 `href`。当前暂指向 `https://github.com/`。
 - **中英文文案**：同步修改页面初始英文内容及 `const i18n` 内的 `en`、`zh` 文案，保留 `data-i18n` 键。

@@ -915,6 +915,7 @@ section[id] { scroll-margin-top: calc(var(--bwm-header-height) + 20px); }
   padding: 88px 24px;
 }
 .functions-heading { text-align: center; }
+.functions-heading .site-heading__title { white-space: pre-wrap; }
 .functions-heading .site-heading__title, .functions-heading .site-heading__description { text-wrap: balance; }
 .functions-heading .site-heading__eyebrow { color: var(--c-accent-cyan); }
 .functions-heading .site-heading__description { max-width: 580px; margin-inline: auto; }
@@ -1331,11 +1332,11 @@ section[id] { scroll-margin-top: calc(var(--bwm-header-height) + 20px); }
  </div>
 </section><div class="section-divider"></div>
 <section id="highlights" class="functions-section">
- <site-section-heading class="functions-heading" eyebrow="05 / HIGHLIGHTS" title="Multi-view. Multi-task. Multi-embodiment. Multi-scenario." title-key="features.title" description-key="features.description"></site-section-heading>
- <div class="functions-grid"><site-card class="functions-card functions-card--prepare" eyebrow="01" icon="videocam" title="Multi-view" title-key="features.prepare.title"><p><span data-i18n="features.prepare.body">A shared scene, trajectory and timeline support synchronized original, following third-person and approximate first-person views. Camera changes remain editable in the scene program.</span></p><a class="feature-evidence-link" href="#pipeline"><span data-i18n="features.prepare.link">Explore the generation workflow</span> <span aria-hidden="true">↗</span></a></site-card>
-<site-card class="functions-card functions-card--review" eyebrow="02" icon="task_alt" title="Multi-task" title-key="features.review.title"><p><span data-i18n="features.review.body">Represent task objects, relationships and motion explicitly: from drawer retrieval and liquid handling to filtration, suture manipulation, locomotion and door opening. Feedback targets the relevant part of the scene program.</span></p><a class="feature-evidence-link" href="#cases"><span data-i18n="features.review.link">Explore task cases</span> <span aria-hidden="true">↗</span></a></site-card>
-<site-card class="functions-card functions-card--deliver" eyebrow="03" icon="precision_manufacturing" title="Multi-embodiment" title-key="features.deliver.title"><p><span data-i18n="features.deliver.body">Robot assets define the structure and joints. The report covers single arms, dual arms with grippers, dual arms with dexterous hands, quadrupeds and humanoids in one generation workflow.</span></p><a class="feature-evidence-link" href="#cases"><span data-i18n="features.deliver.link">Explore robot cases</span> <span aria-hidden="true">↗</span></a></site-card>
-<site-card class="functions-card functions-card--scenario" eyebrow="04" icon="landscape" title="Multi-scenario" title-key="features.scenario.title"><p><span data-i18n="features.scenario.body">Reuse a single Proxy Video as the motion reference for multiple scene styles. Reference images and prompts vary the environment, materials and lighting while the shared proxy guides task motion and timing.</span></p><a class="feature-evidence-link" href="#agent-panel-rendering" data-agent-target="rendering"><span data-i18n="features.scenario.link">Explore scene-style rendering</span> <span aria-hidden="true">↗</span></a></site-card></div>
+ <site-section-heading class="functions-heading" eyebrow="05 / HIGHLIGHTS" title="Multi-View  Multi-Task  Multi-Embodiment  Multi-Scenario" title-key="features.title" description-key="features.description"></site-section-heading>
+ <div class="functions-grid"><site-card class="functions-card functions-card--prepare" eyebrow="01" icon="videocam" title="Multi-View" title-key="features.prepare.title"><p><span data-i18n="features.prepare.body">Generate synchronized original, following third-person and approximate first-person views from one scene. Edit camera paths on a shared motion timeline.</span></p><a class="feature-evidence-link" href="#pipeline"><span data-i18n="features.prepare.link">Explore the generation workflow</span> <span aria-hidden="true">↗</span></a></site-card>
+<site-card class="functions-card functions-card--review" eyebrow="02" icon="task_alt" title="Multi-Task" title-key="features.review.title"><p><span data-i18n="features.review.body">Program object relationships and motion for manipulation and locomotion tasks. Use feedback to refine the relevant part of the scene program.</span></p><a class="feature-evidence-link" href="#cases"><span data-i18n="features.review.link">Explore task cases</span> <span aria-hidden="true">↗</span></a></site-card>
+<site-card class="functions-card functions-card--deliver" eyebrow="03" icon="precision_manufacturing" title="Multi-Embodiment" title-key="features.deliver.title"><p><span data-i18n="features.deliver.body">Use one workflow across single arms, dual arms with grippers or dexterous hands, quadrupeds and humanoids.</span></p><a class="feature-evidence-link" href="#cases"><span data-i18n="features.deliver.link">Explore robot cases</span> <span aria-hidden="true">↗</span></a></site-card>
+<site-card class="functions-card functions-card--scenario" eyebrow="04" icon="landscape" title="Multi-Scenario" title-key="features.scenario.title"><p><span data-i18n="features.scenario.body">Render one Proxy Video in different scene styles. Reference images and prompts vary appearance while the proxy guides motion and timing.</span></p><a class="feature-evidence-link" href="#agent-panel-rendering" data-agent-target="rendering"><span data-i18n="features.scenario.link">Explore scene-style rendering</span> <span aria-hidden="true">↗</span></a></site-card></div>
 </section><div class="section-divider"></div>
 
 </main><footer class="border-t border-border-dim footer-section"><div class="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-4"><span class="text-[11px] font-mono tracking-wider uppercase font-medium text-text-secondary">BWM-Forge · 2026</span></div></footer>
@@ -1857,19 +1858,19 @@ document.addEventListener('DOMContentLoaded',()=>{
     "harness.exp.body": "Building and Rendering Agents retrieve experience before generation. Their stage documents produce new candidates; the library compares each candidate with existing rules and evidence before deciding how the repository should change.",
     "harness.exp.label": "EXPERIENCE CONSTRUCTION & EVOLUTION",
     "harness.exp.note": "General rules apply across tasks; specialized rules are scoped to robots, grippers, scenes, tasks or assets. A no-op leaves the repository unchanged. Retrieved rules return to generation context, completing the experience loop.",
-    "features.prepare.body": "A shared scene, trajectory and timeline support synchronized original, following third-person and approximate first-person views. Camera changes remain editable in the scene program.",
+    "features.prepare.body": "Generate synchronized original, following third-person and approximate first-person views from one scene. Edit camera paths on a shared motion timeline.",
     "features.prepare.link": "Explore the generation workflow",
-    "features.review.body": "Represent task objects, relationships and motion explicitly: from drawer retrieval and liquid handling to filtration, suture manipulation, locomotion and door opening. Feedback targets the relevant part of the scene program.",
+    "features.review.body": "Program object relationships and motion for manipulation and locomotion tasks. Use feedback to refine the relevant part of the scene program.",
     "features.review.link": "Explore task cases",
-    "features.deliver.body": "Robot assets define the structure and joints. The report covers single arms, dual arms with grippers, dual arms with dexterous hands, quadrupeds and humanoids in one generation workflow.",
+    "features.deliver.body": "Use one workflow across single arms, dual arms with grippers or dexterous hands, quadrupeds and humanoids.",
     "features.deliver.link": "Explore robot cases",
-    "features.title": "Multi-view. Multi-task. Multi-embodiment. Multi-scenario.",
+    "features.title": "Multi-View  Multi-Task  Multi-Embodiment  Multi-Scenario",
     "features.description": "Editable geometry, motion and cameras support diverse views, tasks and robots. A shared Proxy Video brings the same motion into different scene styles.",
-    "features.prepare.title": "Multi-view",
-    "features.review.title": "Multi-task",
-    "features.deliver.title": "Multi-embodiment",
-    "features.scenario.title": "Multi-scenario",
-    "features.scenario.body": "Reuse a single Proxy Video as the motion reference for multiple scene styles. Reference images and prompts vary the environment, materials and lighting while the shared proxy guides task motion and timing.",
+    "features.prepare.title": "Multi-View",
+    "features.review.title": "Multi-Task",
+    "features.deliver.title": "Multi-Embodiment",
+    "features.scenario.title": "Multi-Scenario",
+    "features.scenario.body": "Render one Proxy Video in different scene styles. Reference images and prompts vary appearance while the proxy guides motion and timing.",
     "features.scenario.link": "Explore scene-style rendering",
     "cases.task.chemistry": "Chemistry experiment",
     "cases.task.kitchen-drawer": "Kitchen drawer retrieval",
@@ -2067,11 +2068,11 @@ document.addEventListener('DOMContentLoaded',()=>{
     "harness.exp.body": "Building 与 Rendering Agent 在生成前检索经验；阶段文档产生新的候选规则，经验库结合现有条目与证据进行比较，再决定如何更新。",
     "harness.exp.label": "经验构建与演化",
     "harness.exp.note": "通用规则跨任务适用；专用规则限定机器人、夹爪、场景、任务或资产范围。No-op 不改变经验库；检索规则回到生成上下文，形成经验闭环。",
-    "features.prepare.body": "共用场景、轨迹与时间线，生成原始、跟随式第三人称和近似第一人称同步视角；相机变化可在场景程序中直接编辑。",
+    "features.prepare.body": "共用场景、运动与时间线，生成原始、跟随式第三人称和近似第一人称同步视角；相机轨迹可编辑。",
     "features.prepare.link": "查看生成流程",
-    "features.review.body": "显式表达任务物体、关系与运动，覆盖抽屉取物、液体操作、过滤、缝合线操控、行走与开门；反馈可定位到场景程序中的相应部分。",
+    "features.review.body": "显式编程任务物体关系与运动，覆盖操作和移动任务；通过反馈定向细化场景程序。",
     "features.review.link": "查看任务案例",
-    "features.deliver.body": "通过机器人资产定义结构与关节，在统一生成流程中覆盖单臂、双臂夹爪、双臂灵巧手、四足机器人与人形机器人五类本体。",
+    "features.deliver.body": "统一支持单臂、双臂夹爪、双臂灵巧手、四足机器人与人形机器人五类本体。",
     "features.deliver.link": "查看机器人案例",
     "features.title": "多视角、多任务、多本体、多场景。",
     "features.description": "可编辑的几何、运动与相机支持多视角、多任务和多本体；共享同一段 Proxy Video，将相同运动迁移到不同场景风格。",
@@ -2079,7 +2080,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     "features.review.title": "多任务",
     "features.deliver.title": "多本体",
     "features.scenario.title": "多场景",
-    "features.scenario.body": "复用同一段 Proxy Video，将相同的任务运动渲染为不同的场景风格。通过参考图与提示词改变环境外观、材质和光照，共享的 Proxy Video 持续提供任务运动与时序依据。",
+    "features.scenario.body": "同一段 Proxy Video 可渲染为不同场景风格。参考图与提示词改变外观，Proxy Video 提供运动与时序依据。",
     "features.scenario.link": "查看场景风格迁移渲染",
     "cases.task.chemistry": "化学实验",
     "cases.task.kitchen-drawer": "厨房抽屉取物",

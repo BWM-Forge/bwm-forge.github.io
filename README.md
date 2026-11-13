@@ -53,8 +53,8 @@ git push -u origin main
 ## 更新文案、资源与链接
 
 - **首页主视觉**：宽高比 3:1，紧贴导航栏并铺满页面宽度。`media/hero/bwm-forge-v5-loop.mp4` 是八个真实场景合成的 1920 × 640、60 fps、8 秒静音循环视频；片尾使用 0.6 秒叠化衔接片头。`photos/bwm-forge-hero-v5-overlay.svg` 独立显示文字、矢量曲面及向上下逐渐消隐的曲线，保持网格和文字清晰。视频可播放后平滑显现，滚出视野或切换标签页时暂停。`photos/bwm-forge-hero-v5-bg-*` 提供 1920/3840 像素宽的静态背景，用于加载期间、无法自动播放或系统设置“减少动态效果”时的展示。第二行使用 `Multi-Task  Multi-Perspective  Multi-Scenario  Multi-Embodiment`。更换版式时同步更新视频、静态背景与 SVG，保持相同的 3:1 比例和对齐。
-- **论文链接**：在 `index.html` 中查找 `id="technical-report-link"`，替换其 `href`。当前暂指向 `https://arxiv.org/`。
-- **代码链接**：查找 `id="github-link"`，替换其 `href`。当前暂指向 `https://github.com/`。
+- **论文链接**：在 `index.html` 中查找 `id="technical-report-link"`，替换其 `href`。当前指向 `https://arxiv.org/abs/2611.16221`。
+- **代码链接**：查找 `id="github-link"`，替换其 `href`。当前指向 `https://github.com/Lcixs/BWM-Forge`。
 - **中英文文案**：同步修改页面初始英文内容及 `const i18n` 内的 `en`、`zh` 文案，保留 `data-i18n` 键。
 - **案例资源**：修改对应的 `src`、`poster`、`data-preview-src`；视频与缩略图引用需一起更新。建议使用浏览器可播放的 H.264 MP4。
 - **输入示意图**：搜索 `bwm-evidence`，可编辑内联 SVG 图标、箭头和文字。
